@@ -114,12 +114,7 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .block__sub { margin: -4px 0 0; font-size: 12px; line-height: 15px; color: var(--grey-50); }
 .rule-note { display: flex; gap: 8px; align-items: flex-start; padding: 8px 12px; border-left: 2px solid var(--blue); background: var(--azure-5); font-size: 12px; line-height: 16px; color: var(--ink); }
 .rule-note sk-icon { flex: none; color: var(--blue); margin-top: 1px; }
-.tr-sub { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 12px 6px 40px; border-top: 1px solid var(--grey-10); background: #fafafa; font-size: 13px; color: var(--grey-50); flex-wrap: wrap; }
-.tr-sub.is-off { opacity: .55; }
 .postes .val { flex: 1; min-width: 0; }
-.time { height: 32px; padding: 0 6px; border: 1px solid var(--grey-10); border-radius: 4px; background: var(--white); font: inherit; font-size: 14px; color: var(--ink); }
-.time:focus-visible { outline: 2px solid var(--blue); outline-offset: 0; border-color: var(--blue); }
-.time:disabled { color: var(--grey-30); cursor: not-allowed; }
 .block { display: flex; flex-direction: column; gap: 12px; }
 .block > h3 { margin: 0; font-size: 14px; line-height: 16px; font-weight: 600; color: var(--black); }
 .thead { display: grid; grid-template-columns: 1fr 1fr; }
@@ -213,7 +208,6 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
   .dlg-head { padding-inline: 16px 60px; }
   .dlg-dock { padding-inline: 16px; }
   .exc { grid-template-columns: minmax(0, 1fr) 36px; }
-  .tr-sub { padding-left: 12px; gap: 6px; }
   .row-del { right: -34px; }
   .td { padding: 0 8px; }
   .select { margin: 0 -8px; padding: 0 8px 0 10px; }
@@ -683,18 +677,12 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   }
 
   /* ---------- render ---------- */
-  function timeOptions(v) {
-    var o = '';
-    for (var m = 0; m < 1440; m += 30) { var t = (m < 600 ? '0' : '') + Math.floor(m / 60) + ':' + (m % 60 ? '30' : '00'); o += '<option' + (t === v ? ' selected' : '') + '>' + t + '</option>'; }
-    return o;
-  }
   function renderShifts() {
     $('shifts').innerHTML = S.shifts.map(function (s, i) {
       var err = showErrors && s.on && !s.period;
       var val = s.on && s.period ? '<span class="val">' + esc(periodLabel(s.period)) + '</span>' : '<span class="val' + (s.on ? '' : ' ph') + '">Sélectionner</span>';
       return '<div class="tr"><div class="td"><label><input class="cb" type="checkbox" id="sh-' + i + '" data-sh="' + i + '"' + (s.on ? ' checked' : '') + '><span>' + esc(s.label) + '</span></label></div>' +
-        '<div class="td"><button type="button" class="select' + (err ? ' is-error' : '') + '" data-period="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Période comptée pour ' + esc(s.label) + '"' + (s.on ? '' : ' aria-disabled="true"') + '>' + val + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div></div>' +
-        (s.label === 'Travail de nuit' ? '<div class="tr-sub' + (s.on ? '' : ' is-off') + '"><label for="night-from">Horaires de nuit : de</label><select class="time" id="night-from" data-night="from"' + (s.on ? '' : ' disabled') + '>' + timeOptions(S.night.from) + '</select><label for="night-to">à</label><select class="time" id="night-to" data-night="to"' + (s.on ? '' : ' disabled') + '>' + timeOptions(S.night.to) + '</select></div>' : '');
+        '<div class="td"><button type="button" class="select' + (err ? ' is-error' : '') + '" data-period="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Période comptée pour ' + esc(s.label) + '"' + (s.on ? '' : ' aria-disabled="true"') + '>' + val + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div></div>';
     }).join('');
     $('err').hidden = !(showErrors && S.shifts.some(function (s) { return s.on && !s.period; }));
   }
@@ -716,8 +704,6 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
 
   /* ---------- interactions inside dialog ---------- */
   $('shifts').addEventListener('change', function (e) {
-    var n = e.target.getAttribute('data-night');
-    if (n) { S.night[n] = e.target.value; return; }
     var i = e.target.getAttribute('data-sh'); if (i === null) return;
     S.shifts[+i].on = e.target.checked;
     renderShifts(); var f = $('sh-' + i); if (f) f.focus();
