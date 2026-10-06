@@ -102,6 +102,24 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .dlg-dock.has-shadow { box-shadow: 0 -8px 24px rgba(0,0,0,.08); }
 .banner { display: flex; gap: 8px; align-items: center; padding: 8px; border-radius: 8px; background: var(--grey-5); color: var(--grey-50); font-size: 14px; line-height: 17px; }
 .banner sk-icon { flex: none; }
+.banner--warn { align-items: flex-start; background: #fff4e5; color: #6b3d00; }
+.banner--warn sk-icon { color: #ea830c; }
+.indep { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px; border: 1px dashed var(--grey-10); border-radius: 8px; }
+.indep__pill { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 14px; background: var(--grey-5); font-size: 12px; font-weight: 600; }
+.indep__plus { font-weight: 600; color: var(--grey-50); }
+.indep__txt { flex: 1 1 220px; font-size: 12px; line-height: 15px; color: var(--grey-50); }
+.block__head { display: flex; align-items: center; gap: 8px; }
+.block__head h3 { margin: 0; font-size: 14px; line-height: 16px; font-weight: 600; }
+.block__num { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--blue-10); color: var(--blue); font-size: 12px; font-weight: 600; }
+.block__sub { margin: -4px 0 0; font-size: 12px; line-height: 15px; color: var(--grey-50); }
+.rule-note { display: flex; gap: 8px; align-items: flex-start; padding: 8px 12px; border-left: 2px solid var(--blue); background: var(--azure-5); font-size: 12px; line-height: 16px; color: var(--ink); }
+.rule-note sk-icon { flex: none; color: var(--blue); margin-top: 1px; }
+.tr-sub { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 12px 6px 40px; border-top: 1px solid var(--grey-10); background: #fafafa; font-size: 13px; color: var(--grey-50); flex-wrap: wrap; }
+.tr-sub.is-off { opacity: .55; }
+.postes .val { flex: 1; min-width: 0; }
+.time { height: 32px; padding: 0 6px; border: 1px solid var(--grey-10); border-radius: 4px; background: var(--white); font: inherit; font-size: 14px; color: var(--ink); }
+.time:focus-visible { outline: 2px solid var(--blue); outline-offset: 0; border-color: var(--blue); }
+.time:disabled { color: var(--grey-30); cursor: not-allowed; }
 .block { display: flex; flex-direction: column; gap: 12px; }
 .block > h3 { margin: 0; font-size: 14px; line-height: 16px; font-weight: 600; color: var(--black); }
 .thead { display: grid; grid-template-columns: 1fr 1fr; }
@@ -118,6 +136,7 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .select[aria-expanded="true"] { box-shadow: inset 0 0 0 1px var(--blue); }
 .select .val { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .select .val.ph { color: var(--grey-30); }
+.val.ex { color: var(--grey-30); font-style: italic; }
 .select[aria-disabled="true"] { cursor: not-allowed; }
 .select sk-icon { flex: none; transition: transform .2s; }
 .select[aria-expanded="true"] sk-icon.chev { transform: rotate(180deg); }
@@ -194,6 +213,7 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
   .dlg-head { padding-inline: 16px 60px; }
   .dlg-dock { padding-inline: 16px; }
   .exc { grid-template-columns: minmax(0, 1fr) 36px; }
+  .tr-sub { padding-left: 12px; gap: 6px; }
   .row-del { right: -34px; }
   .td { padding: 0 8px; }
   .select { margin: 0 -8px; padding: 0 8px 0 10px; }
@@ -514,30 +534,43 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
       <button class="icon-btn dlg-close" type="button" id="close" aria-label="Fermer"><sk-icon name="close" size="20"></sk-icon></button>
     </div>
     <div class="dlg-body" id="body">
-      <div class="banner"><sk-icon name="info" size="24"></sk-icon><span>Skello priorise vos règles de planification, puis tente de répartir vos shifts pénibles équitablement.</span></div>
+      <div class="banner banner--warn"><sk-icon name="warning-outline" size="24"></sk-icon><span>Ces préférences ne sont pas garanties. En cas de sous-effectif, Skello couvre d’abord vos shifts et respecte vos règles de planification, quitte à ne pas répartir les shifts pénibles comme demandé.</span></div>
+
+      <div class="indep" aria-label="Deux critères indépendants">
+        <span class="indep__pill"><sk-icon name="clock" size="16"></sk-icon>Horaires pénibles</span>
+        <span class="indep__plus">+</span>
+        <span class="indep__pill"><sk-icon name="label" size="16"></sk-icon>Postes pénibles</span>
+        <span class="indep__txt">Deux décomptes indépendants : chacun est réparti équitablement de son côté.</span>
+      </div>
 
       <div class="block">
-        <h3>Jours et horaires pénibles :</h3>
+        <div class="block__head"><span class="block__num">1</span><h3>Horaires pénibles</h3></div>
+        <p class="block__sub">Comptés sur tous les postes. Chaque type coché est réparti séparément.</p>
         <div>
-          <div class="thead"><div class="th">Jours et horaires pénibles</div><div class="th">Période comptée</div></div>
+          <div class="thead"><div class="th">Jours et horaires</div><div class="th">Période comptée<button class="help" type="button" data-tip="Période sur laquelle Skello compte les shifts pénibles déjà réalisés par chaque employé pour équilibrer la répartition. Ex. : « Sur les 4 dernières semaines » tient compte des week-ends travaillés le mois dernier." aria-label="Aide sur la période comptée"><sk-icon name="help" size="16"></sk-icon></button></div></div>
           <div class="tbl" id="shifts"></div>
         </div>
         <div class="err-msg" id="err" hidden><sk-icon name="warning-solid" size="16"></sk-icon><span>Sélectionnez une période comptée pour chaque shift pénible coché.</span></div>
       </div>
 
       <div class="block">
-        <h3>Exceptions par employé :</h3>
-        <div class="exc">
-          <div class="thead"><div class="th">Employés</div><div class="th">Volontaires<button class="help" type="button" id="help" aria-label="Aide sur les volontaires"><sk-icon name="help" size="16"></sk-icon></button></div></div>
-          <div class="tbl" id="exc"></div>
+        <div class="block__head"><span class="block__num">2</span><h3>Postes pénibles</h3></div>
+        <p class="block__sub">Tous les shifts sur ces postes sont comptés, quel que soit l’horaire.</p>
+        <div>
+          <div class="thead" style="grid-template-columns:1fr"><div class="th">Postes</div></div>
+          <button class="postes" type="button" id="postes" aria-haspopup="listbox" aria-expanded="false"></button>
+        </div>
+        <div class="rule-note">
+          <sk-icon name="info" size="16"></sk-icon>
+          <div><b>Un poste pénible l’est sur tous ses créneaux.</b> Si un poste n’est pénible que sur un créneau (ex. Boulangerie à l’ouverture), cochez plutôt l’horaire correspondant ci-dessus.<br>Un shift en Caisse à l’ouverture compte dans les deux décomptes : une ouverture et un poste pénible.</div>
         </div>
       </div>
 
       <div class="block">
-        <h3>Postes pénibles :</h3>
-        <div>
-          <div class="thead" style="grid-template-columns:1fr"><div class="th">Postes pénibles à définir</div></div>
-          <button class="postes" type="button" id="postes" aria-haspopup="listbox" aria-expanded="false"></button>
+        <div class="block__head"><h3>Exceptions par employé</h3></div>
+        <div class="exc">
+          <div class="thead"><div class="th">Employés</div><div class="th">Volontaires<button class="help" type="button" id="help" aria-label="Aide sur les volontaires"><sk-icon name="help" size="16"></sk-icon></button></div></div>
+          <div class="tbl" id="exc"></div>
         </div>
       </div>
     </div>
@@ -559,9 +592,9 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     { v: 'week', l: 'Sur la semaine planifiée' },
     { v: '4w', l: 'Sur les 4 dernières semaines' }
   ];
-  var EMPLOYEES = ['Camille Allain', 'Benoit Dubois', 'Inès Petit', 'Hugo Bernard', 'Léa Moreau', 'Mehdi Benali', 'Sarah Lefèbvre', 'Thomas Roux', 'Pauline Girard'];
-  var SHIFT_TYPES = ['Ouvertures', 'Fermetures', 'Travail de nuit', 'Samedis', 'Dimanches', 'Week-ends'];
-  var POSTES = ['Caisse', 'Boulangerie', 'Rayons frais', 'Boucherie', 'Drive', 'Accueil', 'Sécurité'];
+  var EMPLOYEES = ['Alice Leroy', 'Bruno Dufour', 'Chloé Petit', 'David Martin', 'Émilie Girard', 'François Robert', 'Gaëlle Leconte', 'Hugo Moreau', 'Inès Durand', 'Julien Morel'];
+  var SHIFT_TYPES = ['Ouvertures', 'Fermetures', 'Travail de nuit', 'Samedis', 'Dimanches', 'Week-ends', 'Jours fériés'];
+  var POSTES = ['Caisse', 'Boulangerie', 'Rayon', 'Boucherie', 'Drive', 'Accueil', 'Sécurité'];
   function initial() {
     return {
       shifts: [
@@ -570,10 +603,12 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
         { label: 'Travail de nuit', on: true, period: 'week' },
         { label: 'Samedis', on: false, period: null },
         { label: 'Dimanches', on: false, period: null },
-        { label: 'Week-ends', on: true, period: '4w' }
+        { label: 'Week-ends', on: true, period: '4w' },
+        { label: 'Jours fériés', on: false, period: null }
       ],
-      exc: [{ id: 1, emps: ['Camille Allain'], vol: ['Samedis'] }],
-      postes: ['Caisse', 'Boulangerie', 'Rayons frais']
+      night: { from: '21:00', to: '06:00' },
+      exc: [{ id: 1, emps: [], vol: [] }],
+      postes: []
     };
   }
   var saved = initial(), S = clone(saved), nextId = 2, showErrors = false;
@@ -607,6 +642,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   var backdrop = $('backdrop'), lastFocus = null;
   function openDialog() {
     S = clone(saved); showErrors = false; $('open').classList.remove('hint');
+    if (!S.exc.length) S.exc.push({ id: nextId++, emps: [], vol: [] });
     renderAll();
     lastFocus = document.activeElement;
     backdrop.hidden = false;
@@ -634,8 +670,8 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   window.addEventListener('resize', function () { updateDock(); closePop(); });
 
   /* ---------- chips with +N overflow ---------- */
-  function chipsHTML(list, kind, idx, maxW) {
-    if (!list.length) return '<span class="val ph">Sélectionner</span>';
+  function chipsHTML(list, kind, idx, maxW, example) {
+    if (!list.length) return example ? '<span class="val ex">' + esc(example) + '</span>' : '<span class="val ph">Sélectionner</span>';
     var used = 0, shown = [], rest = 0;
     list.forEach(function (v) {
       var w = v.length * 6.6 + 46;
@@ -647,12 +683,18 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   }
 
   /* ---------- render ---------- */
+  function timeOptions(v) {
+    var o = '';
+    for (var m = 0; m < 1440; m += 30) { var t = (m < 600 ? '0' : '') + Math.floor(m / 60) + ':' + (m % 60 ? '30' : '00'); o += '<option' + (t === v ? ' selected' : '') + '>' + t + '</option>'; }
+    return o;
+  }
   function renderShifts() {
     $('shifts').innerHTML = S.shifts.map(function (s, i) {
       var err = showErrors && s.on && !s.period;
       var val = s.on && s.period ? '<span class="val">' + esc(periodLabel(s.period)) + '</span>' : '<span class="val' + (s.on ? '' : ' ph') + '">Sélectionner</span>';
       return '<div class="tr"><div class="td"><label><input class="cb" type="checkbox" id="sh-' + i + '" data-sh="' + i + '"' + (s.on ? ' checked' : '') + '><span>' + esc(s.label) + '</span></label></div>' +
-        '<div class="td"><button type="button" class="select' + (err ? ' is-error' : '') + '" data-period="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Période comptée pour ' + esc(s.label) + '"' + (s.on ? '' : ' aria-disabled="true"') + '>' + val + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div></div>';
+        '<div class="td"><button type="button" class="select' + (err ? ' is-error' : '') + '" data-period="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Période comptée pour ' + esc(s.label) + '"' + (s.on ? '' : ' aria-disabled="true"') + '>' + val + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div></div>' +
+        (s.label === 'Travail de nuit' ? '<div class="tr-sub' + (s.on ? '' : ' is-off') + '"><label for="night-from">Horaires de nuit : de</label><select class="time" id="night-from" data-night="from"' + (s.on ? '' : ' disabled') + '>' + timeOptions(S.night.from) + '</select><label for="night-to">à</label><select class="time" id="night-to" data-night="to"' + (s.on ? '' : ' disabled') + '>' + timeOptions(S.night.to) + '</select></div>' : '');
     }).join('');
     $('err').hidden = !(showErrors && S.shifts.some(function (s) { return s.on && !s.period; }));
   }
@@ -661,19 +703,21 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     var w = cellWidth();
     $('exc').innerHTML = S.exc.map(function (r, i) {
       return '<div class="tr exc-row' + (r.id === newId ? ' is-new' : '') + '" data-row="' + r.id + '">' +
-        '<div class="td"><button type="button" class="select' + (r.emps.length ? ' has-chips' : '') + '" data-emps="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Employés">' + chipsHTML(r.emps, 'emps', i, w) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
-        '<div class="td"><button type="button" class="select' + (r.vol.length ? ' has-chips' : '') + '" data-vol="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Volontaires">' + chipsHTML(r.vol, 'vol', i, w) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
+        '<div class="td"><button type="button" class="select' + (r.emps.length ? ' has-chips' : '') + '" data-emps="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Employés">' + chipsHTML(r.emps, 'emps', i, w, 'Ex. : Alice Leroy') + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
+        '<div class="td"><button type="button" class="select' + (r.vol.length ? ' has-chips' : '') + '" data-vol="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Volontaires">' + chipsHTML(r.vol, 'vol', i, w, 'Ex. : Samedis') + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
         '<button type="button" class="icon-btn icon-btn--sm row-del" data-del="' + i + '" aria-label="Supprimer l’exception"><sk-icon name="bin" size="16"></sk-icon></button></div>';
     }).join('') + '<div class="add-row"><button class="pill pill--text pill--sm" type="button" id="add"><sk-icon name="more" size="16"></sk-icon>Ajouter</button></div>';
   }
   function renderPostes() {
     var b = $('postes');
-    b.innerHTML = chipsHTML(S.postes, 'postes', 0, b.offsetWidth ? b.offsetWidth - 40 : 520) + '<sk-icon name="unfold-more" size="24"></sk-icon>';
+    b.innerHTML = chipsHTML(S.postes, 'postes', 0, b.offsetWidth ? b.offsetWidth - 40 : 520, 'Ex. : Caisse, Boulangerie') + '<sk-icon name="unfold-more" size="24"></sk-icon>';
   }
   function renderAll() { renderShifts(); renderExc(); renderPostes(); }
 
   /* ---------- interactions inside dialog ---------- */
   $('shifts').addEventListener('change', function (e) {
+    var n = e.target.getAttribute('data-night');
+    if (n) { S.night[n] = e.target.value; return; }
     var i = e.target.getAttribute('data-sh'); if (i === null) return;
     S.shifts[+i].on = e.target.checked;
     renderShifts(); var f = $('sh-' + i); if (f) f.focus();
@@ -795,6 +839,10 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   var helpText = 'Les employés volontaires reçoivent en priorité les shifts pénibles choisis.';
   ['mouseenter', 'focus'].forEach(function (ev) { $('help').addEventListener(ev, function () { showTip($('help'), helpText); }); });
   ['mouseleave', 'blur'].forEach(function (ev) { $('help').addEventListener(ev, hideTip); });
+  [].forEach.call(document.querySelectorAll('.help[data-tip]'), function (b) {
+    ['mouseenter', 'focus'].forEach(function (ev) { b.addEventListener(ev, function () { showTip(b, b.getAttribute('data-tip')); }); });
+    ['mouseleave', 'blur'].forEach(function (ev) { b.addEventListener(ev, hideTip); });
+  });
   $('body').addEventListener('mouseover', function (e) { var m = e.target.closest('.more'); if (m) { showTip(m, m.getAttribute('title')); m.removeAttribute('data-t'); } });
   $('body').addEventListener('mouseout', function (e) { if (e.target.closest('.more')) hideTip(); });
 
@@ -863,22 +911,26 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   function num(x, dec) { return String(+x.toFixed(dec)); }
   function visible(d, emp) { return SHIFTS.filter(function (s) { return s.on && (d === null || s.day === d) && (!emp || s.emp === emp); }); }
 
-  /* pénible type of a shift, read from the saved "Affiner les shifts pénibles" settings (first match, in table order) */
+  /* pénibilité of a shift, read from the saved "Affiner les shifts pénibles" settings.
+     Horaires and postes are two independent counts: a shift can match both. */
+  var HOLIDAYS = []; /* day indexes of public holidays in the displayed week (none from 25 Sept to 1 Oct) */
+  function inNight(s) {
+    var f = mins(saved.night.from), t = mins(saved.night.to), a = mins(s.s), b = mins(s.e);
+    return f > t ? (b > f || a < t) : (a < t && b > f);
+  }
   var PEN_TESTS = {
     'Ouvertures': ['ouverture', function (s) { return mins(s.s) <= 9 * 60; }],
     'Fermetures': ['fermeture', function (s) { return mins(s.e) >= 22 * 60; }],
-    'Travail de nuit': ['travail de nuit', function (s) { return mins(s.s) < 6 * 60 || mins(s.e) > 22 * 60; }],
+    'Travail de nuit': ['nuit', inNight],
     'Samedis': ['samedi', function (s) { return s.day === 5; }],
     'Dimanches': ['dimanche', function (s) { return s.day === 6; }],
-    'Week-ends': ['week-end', function (s) { return s.day >= 5; }]
+    'Week-ends': ['week-end', function (s) { return s.day >= 5; }],
+    'Jours fériés': ['jour férié', function (s) { return HOLIDAYS.indexOf(s.day) >= 0; }]
   };
   function penibleOf(s) {
-    if (!$('c4').checked) return null;
-    for (var k = 0; k < saved.shifts.length; k++) {
-      var t = saved.shifts[k], test = PEN_TESTS[t.label];
-      if (t.on && test && test[1](s)) return test[0];
-    }
-    return null;
+    if (!$('c4').checked) return { hours: [], poste: false };
+    var hours = saved.shifts.filter(function (t) { return t.on && PEN_TESTS[t.label] && PEN_TESTS[t.label][1](s); }).map(function (t) { return PEN_TESTS[t.label][0]; });
+    return { hours: hours, poste: saved.postes.indexOf(s.poste) >= 0 };
   }
 
   function need(d, h) {
@@ -946,7 +998,8 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     return '<div class="sk-shift-preview"><div class="pv-title">' + esc(s.poste) + '</div><div class="pv-time"><b>' + s.s + ' - ' + s.e + '</b><span>' + num(s.dur, 1) + 'h</span></div><div class="pv-items">' +
       (span >= 6 ? it('flatware', '1 repas') : '') +
       (s.tasks ? it('check', esc(s.tasks)) : '') +
-      (pen ? it('warning-outline', 'Shift pénible : ' + esc(pen), 'is-penible') : '') +
+      (pen.hours.length ? it('clock', 'Horaire pénible : ' + esc(pen.hours.join(', ')), 'is-penible') : '') +
+      (pen.poste ? it('label', 'Poste pénible : ' + esc(s.poste), 'is-penible') : '') +
       (s.note ? it('paper-rolled', esc(s.note)) : '') +
       (s.comments ? it('chat-bubble-empty', s.comments + ' commentaire' + (s.comments > 1 ? 's' : '')) : '') +
       '</div></div>';
