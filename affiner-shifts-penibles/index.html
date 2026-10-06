@@ -102,8 +102,6 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .dlg-dock.has-shadow { box-shadow: 0 -8px 24px rgba(0,0,0,.08); }
 .banner { display: flex; gap: 8px; align-items: center; padding: 8px; border-radius: 8px; background: var(--grey-5); color: var(--grey-50); font-size: 14px; line-height: 17px; }
 .banner sk-icon { flex: none; }
-.banner--warn { align-items: flex-start; background: #fff4e5; color: #6b3d00; }
-.banner--warn sk-icon { color: #ea830c; }
 .indep { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px; border: 1px dashed var(--grey-10); border-radius: 8px; }
 .indep__pill { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 14px; background: var(--grey-5); font-size: 12px; font-weight: 600; }
 .indep__plus { font-weight: 600; color: var(--grey-50); }
@@ -528,7 +526,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
       <button class="icon-btn dlg-close" type="button" id="close" aria-label="Fermer"><sk-icon name="close" size="20"></sk-icon></button>
     </div>
     <div class="dlg-body" id="body">
-      <div class="banner banner--warn"><sk-icon name="warning-outline" size="24"></sk-icon><span>Ces préférences ne sont pas garanties. En cas de sous-effectif, Skello couvre d’abord vos shifts et respecte vos règles de planification, quitte à ne pas répartir les shifts pénibles comme demandé.</span></div>
+      <div class="banner"><sk-icon name="info" size="24"></sk-icon><span>Ces préférences ne sont pas garanties. En cas de sous-effectif, Skello couvre d’abord vos shifts et respecte vos règles de planification, quitte à ne pas répartir les shifts pénibles comme demandé.</span></div>
 
       <div class="indep" aria-label="Deux critères indépendants">
         <span class="indep__pill"><sk-icon name="clock" size="16"></sk-icon>Horaires pénibles</span>
