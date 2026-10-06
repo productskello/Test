@@ -1,0 +1,592 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Affiner les shifts pénibles</title>
+<script src="skello-kit.js"></script>
+<style>
+/* Layout: Skello app bar, settings page (left menu + 900px content), "Affiner les shifts pénibles" dialog over it. Values follow the Figma frame "Rules setting" (Orora). Single light theme, like the Skello app. */
+:root {
+  --ink: #1a1a1a; --black: #000; --grey-50: #727272; --grey-30: #b0b0b0; --grey-10: #dddddd; --grey-5: #f3f3f3;
+  --blue: #2b66fe; --blue-10: #d9e6ff; --white: #ffffff; --error: #e2483d; --error-10: #fdecea;
+  --success: #188377; --success-10: #e8faed; --azure-5: #f3f9ff;
+  --font: 'Gellix', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --shadow-high: 0 16px 48px rgba(0,0,0,.22);
+  color-scheme: light;
+}
+html, body { background: var(--white); color: var(--black); font-family: var(--font); font-feature-settings: 'ss01'; }
+body { margin: 0; }
+button { font: inherit; color: inherit; }
+* { box-sizing: border-box; }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+.sk-appbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; max-width: 100%; overflow: hidden; }
+
+/* page */
+.page { display: flex; gap: 48px; align-items: flex-start; max-width: 1440px; margin: 0 auto; padding-block: 32px 64px; padding-inline: 40px; }
+.side { flex: none; width: 246px; display: flex; flex-direction: column; gap: 24px; margin-top: 3px; position: sticky; top: 83px; }
+.menu { background: var(--grey-5); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; }
+.menu--small { padding-block: 8px; }
+.menu a { display: flex; gap: 8px; align-items: center; padding: 8px; border-radius: 4px; color: var(--black); text-decoration: none; font-size: 14px; line-height: 16px; transition: background .15s; }
+.menu a:hover { background: rgba(0,0,0,.05); }
+.menu a sk-icon { flex: none; }
+.main { flex: 1; min-width: 0; max-width: 900px; display: flex; flex-direction: column; }
+h1 { margin: 0; font-size: 24px; line-height: 27px; font-weight: 600; }
+.tabs { display: flex; padding: 0 16px; margin-top: 24px; border-bottom: 1px solid var(--grey-10); overflow-x: auto; scrollbar-width: none; }
+.tab { flex: none; height: 36px; padding: 0 16px; border: 1px solid transparent; border-bottom: 0; border-radius: 8px 8px 0 0; background: none; font-size: 14px; font-weight: 600; color: var(--grey-50); cursor: pointer; margin-bottom: -1px; transition: color .15s; }
+.tab:hover { color: var(--black); }
+.tab[aria-selected="true"] { background: var(--white); border-color: var(--grey-10); color: var(--black); }
+.panel { padding-top: 24px; display: flex; flex-direction: column; gap: 24px; }
+.placeholder { padding: 48px 0; color: var(--grey-50); font-size: 14px; }
+h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
+.crit { display: flex; flex-direction: column; gap: 16px; }
+.crit > p { margin: 0; font-size: 16px; line-height: 20px; }
+.opts { display: flex; flex-direction: column; }
+.opt { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 4px 12px 4px 16px; font-size: 14px; line-height: 16px; }
+.opt label { display: flex; align-items: center; gap: 8px; cursor: pointer; min-width: 0; }
+.opt label span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* checkbox (Orora) */
+.cb { appearance: none; -webkit-appearance: none; flex: none; width: 20px; height: 20px; margin: 0; border: 2px solid var(--grey-50); border-radius: 2px; background: var(--white); cursor: pointer; display: grid; place-content: center; transition: background .15s, border-color .15s; }
+.cb::after { content: ''; width: 12px; height: 7px; border: solid var(--white); border-width: 0 0 2px 2px; transform: translateY(-1px) rotate(-45deg) scale(0); transition: transform .18s cubic-bezier(.3,1.6,.5,1); }
+.cb:checked { background: var(--blue); border-color: var(--blue); }
+.cb:checked::after { transform: translateY(-1px) rotate(-45deg) scale(1); }
+
+/* pills */
+.pill { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: 18px; border: 1px solid transparent; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: box-shadow .2s, transform .1s, opacity .2s; }
+.pill:hover { box-shadow: inset 0 0 0 100vmax rgba(0,0,0,.08); }
+.pill:active { transform: scale(.97); }
+.pill--primary { background: var(--blue); color: var(--white); }
+.pill--outlined { background: var(--white); border-color: var(--grey-10); color: var(--ink); }
+.pill--sm { height: 28px; padding: 0 12px; border-radius: 14px; font-size: 12px; }
+.pill--text { background: none; color: var(--black); }
+.affiner { transition: opacity .2s, transform .2s; }
+.affiner[data-off] { opacity: 0; transform: translateX(-4px); pointer-events: none; }
+
+/* custom rules section (background) */
+.rules-title { display: flex; align-items: center; gap: 8px; padding-top: 12px; }
+.hero { display: flex; border: 1px solid var(--grey-10); border-radius: 8px; overflow: hidden; }
+.hero__main { flex: 1; min-width: 0; padding: 38px 24px; display: flex; flex-direction: column; gap: 24px; align-items: flex-start; }
+.hero__main h3 { margin: 0 0 8px; font-size: 16px; font-weight: 600; }
+.hero__main p { margin: 0; font-size: 14px; line-height: 17px; color: var(--grey-50); }
+.hero__art { flex: none; width: 400px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding: 0 45px; background: linear-gradient(67deg, rgba(138,56,245,.1) 7%, rgba(255,117,117,.1) 72%, rgba(255,181,69,.1) 114%); }
+.art-check { width: 56px; height: 56px; border-radius: 50%; background: var(--success-10); color: var(--success); display: grid; place-items: center; margin-bottom: -28px; position: relative; z-index: 1; }
+.art-cal { width: 100%; background: var(--white); border: 1px solid rgba(0,0,0,.05); border-bottom: 0; border-radius: 4px 4px 0 0; box-shadow: 0 4px 20px rgba(0,0,0,.12); padding: 16px 16px 0; display: flex; flex-direction: column; gap: 28px; }
+.art-top { display: flex; justify-content: space-between; align-items: center; }
+.art-top sk-icon svg { width: 40px; height: 12px; }
+.art-top i { display: inline-block; width: 16px; height: 8px; background: var(--grey-5); margin-left: 8px; }
+.art-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; height: 117px; overflow: hidden; }
+.art-grid b { height: 24px; background: var(--azure-5); }
+.art-grid b.o { background: transparent; }
+.rules { border: 1px solid var(--grey-10); border-radius: 8px; padding: 24px 20px 0; }
+.rules h4 { margin: 0 0 8px; font-size: 14px; font-weight: 600; }
+.rules > p { margin: 0; font-size: 14px; color: var(--grey-50); }
+.rules__labels { display: flex; justify-content: flex-end; padding: 32px 0 12px; border-bottom: 1px solid var(--grey-10); font-size: 12px; font-weight: 600; color: var(--grey-50); }
+.rule { display: flex; gap: 16px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--grey-10); }
+.rule:last-child { border-bottom: 0; }
+.rule__txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.rule__txt b { font-size: 14px; font-weight: 600; }
+.rule__note { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 17px; color: var(--grey-50); }
+.tag { display: inline-flex; align-items: center; height: 20px; padding: 0 6px; border-radius: 4px; background: var(--blue-10); color: var(--blue); font-size: 12px; font-weight: 600; align-self: flex-start; }
+
+/* dialog */
+.backdrop { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 24px 16px; background: rgba(0,0,0,.5); opacity: 0; transition: opacity .2s ease; }
+.backdrop.is-open { opacity: 1; }
+.dialog { width: min(624px, 100%); max-height: calc(100% - 0px); display: flex; flex-direction: column; background: var(--white); border-radius: 8px; box-shadow: var(--shadow-high); overflow: hidden; transform: translateY(16px) scale(.98); transition: transform .26s cubic-bezier(.2,.9,.3,1.1); }
+.backdrop.is-open .dialog { transform: none; }
+.dlg-head { position: relative; padding: 24px 76px 16px 24px; flex: none; }
+.dlg-head h2 { font-size: 20px; line-height: 22px; }
+.icon-btn { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 18px; background: none; cursor: pointer; transition: background .15s; }
+.icon-btn:hover { background: var(--grey-5); }
+.icon-btn--sm { width: 28px; height: 28px; border-radius: 14px; }
+.dlg-close { position: absolute; top: 16px; right: 16px; }
+.dlg-body { flex: 1; min-height: 0; overflow: auto; padding: 8px 24px; display: flex; flex-direction: column; gap: 24px; }
+.dlg-dock { flex: none; display: flex; justify-content: flex-end; gap: 12px; padding: 16px 24px 24px; transition: box-shadow .2s; }
+.dlg-dock.has-shadow { box-shadow: 0 -8px 24px rgba(0,0,0,.08); }
+.banner { display: flex; gap: 8px; align-items: center; padding: 8px; border-radius: 8px; background: var(--grey-5); color: var(--grey-50); font-size: 14px; line-height: 17px; }
+.banner sk-icon { flex: none; }
+.block { display: flex; flex-direction: column; gap: 12px; }
+.block > h3 { margin: 0; font-size: 14px; line-height: 16px; font-weight: 600; color: var(--black); }
+.thead { display: grid; grid-template-columns: 1fr 1fr; }
+.th { display: flex; align-items: center; gap: 2px; height: 36px; padding: 0 16px 8px; font-size: 12px; color: var(--grey-50); white-space: nowrap; overflow: hidden; }
+.th .help { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-left: 2px; border: 0; padding: 0; background: none; cursor: help; color: var(--grey-50); position: relative; }
+.tbl { border: 1px solid var(--grey-10); border-radius: 4px; }
+.tr { display: grid; grid-template-columns: 1fr 1fr; min-height: 44px; border-top: 1px solid var(--grey-10); }
+.tr:first-child { border-top: 0; }
+.td { display: flex; align-items: center; gap: 8px; min-width: 0; min-height: 44px; padding: 0 12px; font-size: 14px; color: var(--ink); }
+.td + .td { border-left: 1px solid var(--grey-10); }
+.td label { display: flex; align-items: center; gap: 8px; cursor: pointer; min-width: 0; flex: 1; align-self: stretch; }
+.select { flex: 1; align-self: stretch; display: flex; align-items: center; gap: 8px; min-width: 0; margin: 0 -12px; padding: 0 12px 0 16px; border: 0; background: none; text-align: left; font-size: 14px; color: var(--ink); cursor: pointer; transition: background .15s, box-shadow .15s; }
+.select:hover:not([aria-disabled="true"]) { background: #fafafa; }
+.select[aria-expanded="true"] { box-shadow: inset 0 0 0 1px var(--blue); }
+.select .val { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.select .val.ph { color: var(--grey-30); }
+.select[aria-disabled="true"] { cursor: not-allowed; }
+.select sk-icon { flex: none; transition: transform .2s; }
+.select[aria-expanded="true"] sk-icon.chev { transform: rotate(180deg); }
+.select.is-error { box-shadow: inset 0 0 0 1px var(--error); background: var(--error-10); }
+.chips { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; overflow: hidden; }
+.select.has-chips { padding-left: 8px; }
+.chip { flex: 0 1 auto; min-width: 0; max-width: 100%; display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 6px 0 12px; border-radius: 14px; background: var(--blue-10); color: var(--blue); font-size: 12px; font-weight: 600; white-space: nowrap; animation: pop .18s cubic-bezier(.3,1.5,.5,1); }
+.chip .t { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.chip .x { flex: none; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 8px; color: var(--blue); }
+.chip .x:hover { background: rgba(43,102,254,.15); }
+.chip.is-leaving { animation: unpop .14s ease forwards; }
+.more { flex: none; font-size: 14px; color: var(--black); }
+.err-msg { display: flex; gap: 6px; align-items: center; font-size: 12px; line-height: 14px; color: var(--error); }
+.err-msg[hidden] { display: none; }
+.shake { animation: shake .36s ease; }
+
+.exc { display: grid; grid-template-columns: minmax(0, 1fr) 44px; }
+.exc .thead { grid-column: 1; }
+.exc .tbl { grid-column: 1; }
+.exc-row { position: relative; }
+.exc-row.is-new { animation: rowIn .22s ease; }
+.exc-row.is-leaving { animation: rowOut .18s ease forwards; overflow: hidden; }
+.row-del { position: absolute; right: -40px; top: 8px; opacity: .55; transition: opacity .15s, background .15s; }
+.exc-row:hover .row-del, .row-del:focus-visible { opacity: 1; }
+.add-row { display: flex; align-items: center; min-height: 44px; padding: 0 10px; border-top: 1px solid var(--grey-10); }
+.tbl > .add-row:first-child { border-top: 0; }
+.postes { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px 0 8px; border: 1px solid var(--grey-10); border-radius: 4px; background: var(--white); cursor: pointer; width: 100%; text-align: left; transition: border-color .15s; }
+.postes:hover { border-color: var(--grey-30); }
+.postes[aria-expanded="true"] { border-color: var(--blue); }
+
+/* dropdown menu */
+.menu-pop { position: fixed; z-index: 40; min-width: 180px; max-height: 280px; overflow: auto; padding: 4px; background: var(--white); border-radius: var(--sk-radius-xs, 4px); box-shadow: var(--sk-shadow-medium, 0 8px 24px rgba(0,0,0,.16)); opacity: 0; transform: translateY(-4px); transition: opacity .12s ease, transform .12s ease; }
+.menu-pop.is-open { opacity: 1; transform: none; }
+/* Orora SkMenuItem, role=option: a selected option keeps the default text colour and transparent background; the checkbox (multi) or check icon (single) carries the selection */
+.menu-item { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 36px; padding: 8px 12px; border: 0; border-radius: 0; background: transparent; text-align: left; font-size: 14px; line-height: 16px; color: var(--sk-text, var(--ink)); cursor: pointer; }
+.menu-item:hover, .menu-item:focus-visible { background: var(--sk-hover, var(--grey-5)); outline: none; }
+.menu-item[aria-selected="true"] { background: transparent; color: var(--sk-text, var(--ink)); font-weight: 400; }
+.menu-item[aria-selected="true"]:hover, .menu-item[aria-selected="true"]:focus-visible { background: var(--sk-hover, var(--grey-5)); }
+.menu-item .cb { pointer-events: none; }
+.menu-item .tick { margin-left: auto; color: var(--sk-text, var(--ink)); }
+
+/* tooltip */
+.tip { position: fixed; z-index: 45; max-width: 260px; padding: 8px 10px; border-radius: 4px; background: var(--ink); color: var(--white); font-size: 12px; line-height: 15px; pointer-events: none; opacity: 0; transform: translateY(2px); transition: opacity .12s, transform .12s; }
+.tip.is-on { opacity: 1; transform: none; }
+
+/* toast */
+.toasts { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 50; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+.toast { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-radius: 4px; background: var(--success); color: var(--white); font-size: 14px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,.18); animation: toastIn .28s cubic-bezier(.2,.9,.3,1.2); }
+.toast--info { background: var(--ink); }
+.toast.is-leaving { animation: toastOut .2s ease forwards; }
+.spin { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: var(--white); border-radius: 50%; animation: spin .7s linear infinite; }
+
+@keyframes pop { from { transform: scale(.6); opacity: 0; } }
+@keyframes unpop { to { transform: scale(.6); opacity: 0; } }
+@keyframes shake { 20%, 60% { transform: translateX(-4px); } 40%, 80% { transform: translateX(4px); } }
+@keyframes rowIn { from { opacity: 0; transform: translateY(-6px); } }
+@keyframes rowOut { to { opacity: 0; transform: translateX(8px); } }
+@keyframes toastIn { from { opacity: 0; transform: translateY(12px); } }
+@keyframes toastOut { to { opacity: 0; transform: translateY(8px); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(43,102,254,.35); } 50% { box-shadow: 0 0 0 6px rgba(43,102,254,0); } }
+.affiner.hint { animation: pulse 1.6s ease 2; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+
+@media (max-width: 1100px) { .side { display: none; } .page { padding-inline: 24px; } .hero__art { display: none; } }
+@media (max-width: 640px) {
+  .page { padding-inline: 16px; padding-block: 24px 48px; }
+  .sk-appbar__nav { display: none; }
+  .sk-appbar { gap: 8px; padding: 0 12px; }
+  .sk-appbar__end .sk-icon-button { display: none; }
+  .sk-shop-select { min-width: 0; max-width: 160px; overflow: hidden; white-space: nowrap; }
+  .opt label span { white-space: normal; }
+  .dlg-body { padding-inline: 16px; }
+  .dlg-head { padding-inline: 16px 60px; }
+  .dlg-dock { padding-inline: 16px; }
+  .exc { grid-template-columns: minmax(0, 1fr) 36px; }
+  .row-del { right: -34px; }
+  .td { padding: 0 8px; }
+  .select { margin: 0 -8px; padding: 0 8px 0 10px; }
+  .th { padding-inline: 10px; }
+}
+</style>
+
+<header class="sk-appbar"><sk-icon name="skello-logo"></sk-icon><button class="sk-shop-select" type="button"><span class="sk-shop-select__icon"><sk-icon name="store" size="16"></sk-icon></span>Supermarché<sk-icon name="unfold-more" size="16"></sk-icon></button><nav class="sk-appbar__nav"><a href="#" data-nop>Planning</a><a href="#" data-nop>Missions</a><a href="#" data-nop>Employés</a><a href="#" data-nop>Rapport</a><a href="#" data-nop>Badgeuse</a><a href="#" data-nop>Pilotage</a></nav><div class="sk-appbar__end"><button class="sk-icon-button" type="button" aria-label="Paramètres"><sk-icon name="gear"></sk-icon></button><button class="sk-icon-button" type="button" aria-label="Accueil"><sk-icon name="home"></sk-icon></button><span class="sk-avatar">CM</span></div></header>
+
+<div class="page">
+  <nav class="side" aria-label="Paramètres">
+    <div class="menu">
+      <a href="#" data-nop><sk-icon name="clipboard"></sk-icon>Paramètres de l’établissement</a>
+      <a href="#" data-nop><sk-icon name="warning-outline"></sk-icon>Alertes</a>
+      <a href="#" data-nop><sk-icon name="label"></sk-icon>Postes</a>
+      <a href="#" data-nop><sk-icon name="bag"></sk-icon>Missions</a>
+      <a href="#" data-nop><sk-icon name="bar-chart"></sk-icon>Prédiction d’activité</a>
+      <a href="#" data-nop><sk-icon name="person-two"></sk-icon>Équipes</a>
+      <a href="#" data-nop><sk-icon name="palm-tree"></sk-icon>Absences</a>
+      <a href="#" data-nop><sk-icon name="store"></sk-icon>Établissement</a>
+      <a href="#" data-nop><sk-icon name="paper-folded"></sk-icon>Modèles de documents administratifs</a>
+      <a href="#" data-nop><sk-icon name="magic"></sk-icon>Paramètres Smart Planner</a>
+      <a href="#" data-nop><sk-icon name="time-clock"></sk-icon>Paramètres Badgeuse</a>
+    </div>
+    <div class="menu menu--small">
+      <a href="#" data-nop><sk-icon name="gear"></sk-icon>Paramètres de l’établissement</a>
+    </div>
+  </nav>
+
+  <main class="main">
+    <h1>Planification</h1>
+    <div class="tabs" role="tablist" aria-label="Planification">
+      <button class="tab" role="tab" type="button" aria-selected="false">Prédiction d’activité</button>
+      <button class="tab" role="tab" type="button" aria-selected="false">Besoins en personnel</button>
+      <button class="tab" role="tab" type="button" aria-selected="false">Paramètres de shift</button>
+      <button class="tab" role="tab" type="button" aria-selected="false">Attribution des postes</button>
+      <button class="tab" role="tab" type="button" aria-selected="true" data-main>Règles et critères</button>
+    </div>
+
+    <div class="panel" id="panel-main">
+      <section class="crit">
+        <h2>Critères d’optimisation</h2>
+        <p>Définissez les contraintes que Skello doit prendre en compte pour assigner automatiquement des personnes à des shifts.</p>
+        <div class="opts">
+          <div class="opt"><label><input class="cb" type="checkbox" id="c1" checked><span>Minimiser les heures supplémentaires</span></label></div>
+          <div class="opt"><label><input class="cb" type="checkbox" id="c2" checked><span>Prioriser l’affectation des employés permanents</span></label></div>
+          <div class="opt"><label><input class="cb" type="checkbox" id="c3" checked><span>Prendre en compte les indisponibilités</span></label></div>
+          <div class="opt"><label><input class="cb" type="checkbox" id="c4" checked><span>Favoriser l’équité des postes et horaires pénibles.</span></label><button class="pill pill--outlined pill--sm affiner hint" type="button" id="open">Affiner</button></div>
+        </div>
+      </section>
+
+      <section class="crit" style="gap:12px">
+        <div class="rules-title"><h2>Règles personnalisées</h2><sk-icon name="help" size="20"></sk-icon></div>
+        <div class="hero">
+          <div class="hero__main">
+            <div><h3>Créez des plannings sur-mesure en un clic</h3><p>Définissez vos règles et contraintes à l'échelle de l'entreprise, d'une équipe ou d'un salarié pour des plannings qui respectent votre réalité opérationnelle.</p></div>
+            <button class="pill pill--primary" type="button" data-nop>Personnaliser mes règles</button>
+          </div>
+          <div class="hero__art" aria-hidden="true">
+            <div class="art-check"><sk-icon name="check" size="32"></sk-icon></div>
+            <div class="art-cal">
+              <div class="art-top"><sk-icon name="skello-logo" size="12"></sk-icon><span><i></i><i></i><i></i></span></div>
+              <div class="art-grid"><b></b><b></b><b></b><b class="o"></b><b></b><b class="o"></b><b></b><b></b><b class="o"></b><b></b><b></b><b></b><b></b><b></b><b class="o"></b><b></b></div>
+            </div>
+          </div>
+        </div>
+        <div class="rules">
+          <h4>Règles de durée de travail</h4>
+          <p>Règles relatives au temps de travail basé sur votre convention collective</p>
+          <div class="rules__labels">Prise en compte dans la planification</div>
+          <div class="rule"><div class="rule__txt"><b>Nombre de coupure par jour</b><div class="rule__note"><sk-icon name="lock-close" size="16"></sk-icon><span>D’après la Convention Collective, le nombre de coupure entre deux services fractionnés est limité à 1 par jour.</span></div><span class="tag">Temps partiel</span></div><input class="cb" type="checkbox" id="r1" checked aria-label="Nombre de coupure par jour"></div>
+          <div class="rule"><div class="rule__txt"><b>Nombre d’heures de coupure par jour maximum</b><div class="rule__note"><sk-icon name="lock-close" size="16"></sk-icon><span>D’après votre convention collective, le temps qui s’écoule entre deux services ne peut pas dépasser 5 heures.</span></div><span class="tag">Temps partiel</span></div><input class="cb" type="checkbox" id="r2" checked aria-label="Nombre d’heures de coupure par jour maximum"></div>
+          <div class="rule"><div class="rule__txt"><b>Nombre de jours de repos par semaine</b><div class="rule__note"><sk-icon name="lock-close" size="16"></sk-icon><span>D’après votre convention collective, tous les salariés doivent bénéficier de 2,0 jours de repos par semaine.</span></div><span class="tag">Tous les employés</span></div><input class="cb" type="checkbox" id="r3" checked aria-label="Nombre de jours de repos par semaine"></div>
+          <div class="rule"><div class="rule__txt"><b>Temps de travail maximum par semaine</b><div class="rule__note"><sk-icon name="lock-close" size="16"></sk-icon><span>D’après votre convention collective, les salariés peuvent travailler au maximum 39h00 par semaine.</span></div><span class="tag">Tous les employés</span></div><input class="cb" type="checkbox" id="r4" checked aria-label="Temps de travail maximum par semaine"></div>
+        </div>
+      </section>
+    </div>
+    <div class="panel" id="panel-other" hidden><p class="placeholder">Cet onglet n’est pas inclus dans le prototype. Revenez sur « Règles et critères ».</p></div>
+  </main>
+</div>
+
+<div class="backdrop" id="backdrop" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
+    <div class="dlg-head">
+      <h2 id="dlg-title">Affiner les shifts pénibles</h2>
+      <button class="icon-btn dlg-close" type="button" id="close" aria-label="Fermer"><sk-icon name="close" size="20"></sk-icon></button>
+    </div>
+    <div class="dlg-body" id="body">
+      <div class="banner"><sk-icon name="info" size="24"></sk-icon><span>Skello priorise vos règles de planification, puis tente de répartir vos shifts pénibles équitablement.</span></div>
+
+      <div class="block">
+        <h3>Jours et horaires pénibles :</h3>
+        <div>
+          <div class="thead"><div class="th">Jours et horaires pénibles</div><div class="th">Période comptée</div></div>
+          <div class="tbl" id="shifts"></div>
+        </div>
+        <div class="err-msg" id="err" hidden><sk-icon name="warning-solid" size="16"></sk-icon><span>Sélectionnez une période comptée pour chaque shift pénible coché.</span></div>
+      </div>
+
+      <div class="block">
+        <h3>Exceptions par employé :</h3>
+        <div class="exc">
+          <div class="thead"><div class="th">Employés</div><div class="th">Volontaires<button class="help" type="button" id="help" aria-label="Aide sur les volontaires"><sk-icon name="help" size="16"></sk-icon></button></div></div>
+          <div class="tbl" id="exc"></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Postes pénibles :</h3>
+        <div>
+          <div class="thead" style="grid-template-columns:1fr"><div class="th">Postes pénibles à définir</div></div>
+          <button class="postes" type="button" id="postes" aria-haspopup="listbox" aria-expanded="false"></button>
+        </div>
+      </div>
+    </div>
+    <div class="dlg-dock" id="dock">
+      <button class="pill pill--primary" type="button" id="save">Valider</button>
+    </div>
+  </div>
+</div>
+
+<div class="menu-pop" id="pop" role="listbox" hidden></div>
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var PERIODS = [
+    { v: 'week', l: 'Sur la semaine planifiée' },
+    { v: '4w', l: 'Sur les 4 dernières semaines' }
+  ];
+  var EMPLOYEES = ['Camille Allain', 'Benoit Dubois', 'Inès Petit', 'Hugo Bernard', 'Léa Moreau', 'Mehdi Benali', 'Sarah Lefèbvre', 'Thomas Roux', 'Pauline Girard'];
+  var SHIFT_TYPES = ['Ouvertures', 'Fermetures', 'Travail de nuit', 'Samedis', 'Dimanches', 'Week-ends'];
+  var POSTES = ['Caisse', 'Boulangerie', 'Rayons frais', 'Boucherie', 'Drive', 'Accueil', 'Sécurité'];
+  function initial() {
+    return {
+      shifts: [
+        { label: 'Ouvertures', on: true, period: 'week' },
+        { label: 'Fermetures', on: true, period: 'week' },
+        { label: 'Travail de nuit', on: true, period: 'week' },
+        { label: 'Samedis', on: false, period: null },
+        { label: 'Dimanches', on: false, period: null },
+        { label: 'Week-ends', on: true, period: '4w' }
+      ],
+      exc: [{ id: 1, emps: ['Camille Allain'], vol: ['Samedis'] }],
+      postes: ['Caisse', 'Boulangerie', 'Rayons frais']
+    };
+  }
+  var saved = initial(), S = clone(saved), nextId = 2, showErrors = false;
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+  function periodLabel(v) { var p = PERIODS.filter(function (x) { return x.v === v; })[0]; return p ? p.l : ''; }
+
+  /* ---------- toast ---------- */
+  function toast(text, info) {
+    var t = document.createElement('div');
+    t.className = 'toast' + (info ? ' toast--info' : '');
+    t.innerHTML = (info ? '<sk-icon name="info" size="20"></sk-icon>' : '<sk-icon name="check" size="20"></sk-icon>') + '<span>' + esc(text) + '</span>';
+    $('toasts').appendChild(t);
+    setTimeout(function () { t.classList.add('is-leaving'); setTimeout(function () { t.remove(); }, 220); }, 3200);
+  }
+  document.addEventListener('click', function (e) {
+    var n = e.target.closest('[data-nop]');
+    if (n) { e.preventDefault(); toast('Cette action n’est pas incluse dans le prototype', true); }
+  });
+
+  /* ---------- page ---------- */
+  document.querySelectorAll('.tab').forEach(function (t) {
+    t.addEventListener('click', function () {
+      document.querySelectorAll('.tab').forEach(function (x) { x.setAttribute('aria-selected', String(x === t)); });
+      var main = t.hasAttribute('data-main');
+      $('panel-main').hidden = !main; $('panel-other').hidden = main;
+    });
+  });
+  $('c4').addEventListener('change', function () {
+    if (this.checked) $('open').removeAttribute('data-off'); else $('open').setAttribute('data-off', '');
+  });
+
+  /* ---------- dialog open / close ---------- */
+  var backdrop = $('backdrop'), lastFocus = null;
+  function openDialog() {
+    S = clone(saved); showErrors = false; $('open').classList.remove('hint');
+    renderAll();
+    lastFocus = document.activeElement;
+    backdrop.hidden = false;
+    requestAnimationFrame(function () { requestAnimationFrame(function () { backdrop.classList.add('is-open'); updateDock(); }); });
+    setTimeout(function () { $('close').focus(); }, 60);
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDialog() {
+    closePop();
+    backdrop.classList.remove('is-open');
+    setTimeout(function () { backdrop.hidden = true; document.body.style.overflow = ''; if (lastFocus) lastFocus.focus(); }, 220);
+  }
+  $('open').addEventListener('click', openDialog);
+  $('close').addEventListener('click', closeDialog);
+  backdrop.addEventListener('mousedown', function (e) { if (e.target === backdrop) closeDialog(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (!$('pop').hidden) { closePop(true); return; }
+    if (!backdrop.hidden) closeDialog();
+  });
+  /* dock shadow: shown while content continues below, removed at the bottom (Orora note) */
+  function updateDock() { var b = $('body'); $('dock').classList.toggle('has-shadow', b.scrollTop + b.clientHeight < b.scrollHeight - 2); }
+  $('body').addEventListener('scroll', function () { updateDock(); closePop(); });
+  window.addEventListener('resize', function () { updateDock(); closePop(); });
+
+  /* ---------- chips with +N overflow ---------- */
+  function chipsHTML(list, kind, idx, maxW) {
+    if (!list.length) return '<span class="val ph">Sélectionner</span>';
+    var used = 0, shown = [], rest = 0;
+    list.forEach(function (v) {
+      var w = v.length * 6.6 + 46;
+      if (!shown.length || used + w <= maxW - 30) { shown.push(v); used += w + 8; } else rest++;
+    });
+    return '<span class="chips">' + shown.map(function (v) {
+      return '<span class="chip"><span class="t">' + esc(v) + '</span><span class="x" role="button" tabindex="0" aria-label="Retirer ' + esc(v) + '" data-rm="' + kind + '" data-idx="' + idx + '" data-v="' + esc(v) + '"><sk-icon name="close" size="16"></sk-icon></span></span>';
+    }).join('') + (rest ? '<span class="more" title="' + esc(list.slice(shown.length).join(', ')) + '">+' + rest + '</span>' : '') + '</span>';
+  }
+
+  /* ---------- render ---------- */
+  function renderShifts() {
+    $('shifts').innerHTML = S.shifts.map(function (s, i) {
+      var err = showErrors && s.on && !s.period;
+      var val = s.on && s.period ? '<span class="val">' + esc(periodLabel(s.period)) + '</span>' : '<span class="val' + (s.on ? '' : ' ph') + '">Sélectionner</span>';
+      return '<div class="tr"><div class="td"><label><input class="cb" type="checkbox" id="sh-' + i + '" data-sh="' + i + '"' + (s.on ? ' checked' : '') + '><span>' + esc(s.label) + '</span></label></div>' +
+        '<div class="td"><button type="button" class="select' + (err ? ' is-error' : '') + '" data-period="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Période comptée pour ' + esc(s.label) + '"' + (s.on ? '' : ' aria-disabled="true"') + '>' + val + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div></div>';
+    }).join('');
+    $('err').hidden = !(showErrors && S.shifts.some(function (s) { return s.on && !s.period; }));
+  }
+  function cellWidth() { var t = $('exc'); return t && t.offsetWidth ? t.offsetWidth / 2 - 56 : 190; }
+  function renderExc(newId) {
+    var w = cellWidth();
+    $('exc').innerHTML = S.exc.map(function (r, i) {
+      return '<div class="tr exc-row' + (r.id === newId ? ' is-new' : '') + '" data-row="' + r.id + '">' +
+        '<div class="td"><button type="button" class="select' + (r.emps.length ? ' has-chips' : '') + '" data-emps="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Employés">' + chipsHTML(r.emps, 'emps', i, w) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
+        '<div class="td"><button type="button" class="select' + (r.vol.length ? ' has-chips' : '') + '" data-vol="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Volontaires">' + chipsHTML(r.vol, 'vol', i, w) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
+        '<button type="button" class="icon-btn icon-btn--sm row-del" data-del="' + i + '" aria-label="Supprimer l’exception"><sk-icon name="bin" size="16"></sk-icon></button></div>';
+    }).join('') + '<div class="add-row"><button class="pill pill--text pill--sm" type="button" id="add"><sk-icon name="more" size="16"></sk-icon>Ajouter</button></div>';
+  }
+  function renderPostes() {
+    var b = $('postes');
+    b.innerHTML = chipsHTML(S.postes, 'postes', 0, b.offsetWidth ? b.offsetWidth - 40 : 520) + '<sk-icon name="unfold-more" size="24"></sk-icon>';
+  }
+  function renderAll() { renderShifts(); renderExc(); renderPostes(); }
+
+  /* ---------- interactions inside dialog ---------- */
+  $('shifts').addEventListener('change', function (e) {
+    var i = e.target.getAttribute('data-sh'); if (i === null) return;
+    S.shifts[+i].on = e.target.checked;
+    renderShifts(); var f = $('sh-' + i); if (f) f.focus();
+  });
+  $('body').addEventListener('click', function (e) {
+    var rm = e.target.closest('[data-rm]');
+    if (rm) { e.stopPropagation(); removeChip(rm); return; }
+    var t;
+    if ((t = e.target.closest('[data-period]'))) {
+      var i = +t.getAttribute('data-period');
+      if (!S.shifts[i].on) return;
+      openPop(t, PERIODS.map(function (p) { return { v: p.v, l: p.l }; }), false, function () { return S.shifts[i].period ? [S.shifts[i].period] : []; }, function (v) {
+        S.shifts[i].period = v; renderShifts(); closePop(); var b = document.querySelector('[data-period="' + i + '"]'); if (b) b.focus();
+      });
+      return;
+    }
+    if ((t = e.target.closest('[data-emps]'))) { multiPop(t, EMPLOYEES, function () { return S.exc[+t.getAttribute('data-emps')].emps; }, 'emps', +t.getAttribute('data-emps')); return; }
+    if ((t = e.target.closest('[data-vol]'))) { multiPop(t, SHIFT_TYPES, function () { return S.exc[+t.getAttribute('data-vol')].vol; }, 'vol', +t.getAttribute('data-vol')); return; }
+    if ((t = e.target.closest('#postes'))) { multiPop(t, POSTES, function () { return S.postes; }, 'postes', 0); return; }
+    if ((t = e.target.closest('[data-del]'))) {
+      var idx = +t.getAttribute('data-del'), row = t.closest('.exc-row');
+      row.classList.add('is-leaving');
+      setTimeout(function () { S.exc.splice(idx, 1); renderExc(); updateDock(); }, 180);
+      return;
+    }
+    if (e.target.closest('#add')) {
+      var id = nextId++; S.exc.push({ id: id, emps: [], vol: [] }); renderExc(id); updateDock();
+      var b = document.querySelector('[data-row="' + id + '"] [data-emps]'); if (b) { b.focus(); b.click(); }
+    }
+  });
+  $('body').addEventListener('keydown', function (e) {
+    var rm = e.target.closest('[data-rm]');
+    if (rm && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); removeChip(rm); }
+  });
+  function listFor(kind, i) { return kind === 'postes' ? S.postes : S.exc[i][kind]; }
+  function rerender(kind) { if (kind === 'postes') renderPostes(); else renderExc(); }
+  function removeChip(el) {
+    var kind = el.getAttribute('data-rm'), i = +el.getAttribute('data-idx'), v = el.getAttribute('data-v');
+    var chip = el.closest('.chip'); chip.classList.add('is-leaving');
+    setTimeout(function () { var l = listFor(kind, i); var k = l.indexOf(v); if (k >= 0) l.splice(k, 1); rerender(kind); }, 140);
+  }
+  function multiPop(trigger, options, getSel, kind, i) {
+    openPop(trigger, options.map(function (o) { return { v: o, l: o }; }), true, getSel, function (v) {
+      var l = listFor(kind, i), k = l.indexOf(v);
+      if (k >= 0) l.splice(k, 1); else l.push(v);
+      rerender(kind);
+      var sel = kind === 'postes' ? '#postes' : '[data-' + kind + '="' + i + '"]';
+      var nt = document.querySelector(sel); if (nt) { popTrigger = nt; nt.setAttribute('aria-expanded', 'true'); placePop(); }
+    });
+  }
+
+  /* ---------- dropdown ---------- */
+  var pop = $('pop'), popTrigger = null, popSel = null, popPick = null, popMulti = false, popOpts = [];
+  function openPop(trigger, opts, multi, getSel, onPick) {
+    if (popTrigger === trigger && !pop.hidden) { closePop(true); return; }
+    closePop();
+    popTrigger = trigger; popOpts = opts; popMulti = multi; popSel = getSel; popPick = onPick;
+    trigger.setAttribute('aria-expanded', 'true');
+    pop.setAttribute('aria-multiselectable', String(multi));
+    drawPop();
+    pop.hidden = false; placePop();
+    requestAnimationFrame(function () { pop.classList.add('is-open'); var f = pop.querySelector('.menu-item'); if (f) f.focus({ preventScroll: true }); });
+  }
+  function drawPop() {
+    var sel = popSel();
+    pop.innerHTML = popOpts.map(function (o) {
+      var on = sel.indexOf(o.v) >= 0;
+      return '<button type="button" class="menu-item" role="option" aria-selected="' + on + '" data-v="' + esc(o.v) + '">' +
+        (popMulti ? '<input class="cb" type="checkbox" tabindex="-1"' + (on ? ' checked' : '') + ' aria-hidden="true">' : '') +
+        '<span>' + esc(o.l) + '</span>' + (!popMulti && on ? '<sk-icon class="tick" name="check" size="16"></sk-icon>' : '') + '</button>';
+    }).join('');
+  }
+  function placePop() {
+    if (!popTrigger) return;
+    var r = popTrigger.getBoundingClientRect(), w = Math.max(r.width, 220);
+    pop.style.width = w + 'px';
+    var left = Math.min(r.left, window.innerWidth - w - 8), top = r.bottom + 4;
+    var h = pop.offsetHeight || 200;
+    if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 4);
+    pop.style.left = Math.max(8, left) + 'px'; pop.style.top = top + 'px';
+  }
+  function closePop(refocus) {
+    if (pop.hidden) return;
+    var t = popTrigger;
+    pop.classList.remove('is-open');
+    if (t) t.setAttribute('aria-expanded', 'false');
+    popTrigger = null;
+    setTimeout(function () { if (!popTrigger) pop.hidden = true; }, 120);
+    if (refocus && t) t.focus();
+  }
+  pop.addEventListener('click', function (e) {
+    var it = e.target.closest('.menu-item'); if (!it) return;
+    var v = it.getAttribute('data-v');
+    popPick(v);
+    if (popMulti && !pop.hidden) { var fv = v; drawPop(); var again = pop.querySelector('[data-v="' + CSS.escape(fv) + '"]'); if (again) again.focus(); }
+  });
+  pop.addEventListener('keydown', function (e) {
+    var items = [].slice.call(pop.querySelectorAll('.menu-item')), k = items.indexOf(document.activeElement);
+    if (e.key === 'ArrowDown') { e.preventDefault(); (items[k + 1] || items[0]).focus(); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); (items[k - 1] || items[items.length - 1]).focus(); }
+    if (e.key === 'Tab') closePop();
+  });
+  document.addEventListener('mousedown', function (e) {
+    if (pop.hidden) return;
+    if (pop.contains(e.target) || (popTrigger && popTrigger.contains(e.target))) return;
+    closePop();
+  });
+
+  /* ---------- tooltip ---------- */
+  var tip = $('tip');
+  function showTip(el, text) {
+    tip.textContent = text; tip.hidden = false;
+    var r = el.getBoundingClientRect();
+    tip.style.left = Math.max(8, Math.min(r.left - 20, window.innerWidth - 268)) + 'px';
+    tip.style.top = (r.bottom + 6) + 'px';
+    requestAnimationFrame(function () { tip.classList.add('is-on'); });
+  }
+  function hideTip() { tip.classList.remove('is-on'); setTimeout(function () { if (!tip.classList.contains('is-on')) tip.hidden = true; }, 120); }
+  var helpText = 'Les employés volontaires reçoivent en priorité les shifts pénibles choisis.';
+  ['mouseenter', 'focus'].forEach(function (ev) { $('help').addEventListener(ev, function () { showTip($('help'), helpText); }); });
+  ['mouseleave', 'blur'].forEach(function (ev) { $('help').addEventListener(ev, hideTip); });
+  $('body').addEventListener('mouseover', function (e) { var m = e.target.closest('.more'); if (m) { showTip(m, m.getAttribute('title')); m.removeAttribute('data-t'); } });
+  $('body').addEventListener('mouseout', function (e) { if (e.target.closest('.more')) hideTip(); });
+
+  /* ---------- save ---------- */
+  $('save').addEventListener('click', function () {
+    var btn = this;
+    if (S.shifts.some(function (s) { return s.on && !s.period; })) {
+      showErrors = true; renderShifts();
+      var first = document.querySelector('.select.is-error');
+      if (first) { first.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+      var blk = $('shifts'); blk.classList.remove('shake'); void blk.offsetWidth; blk.classList.add('shake');
+      return;
+    }
+    btn.disabled = true; btn.innerHTML = '<span class="spin" aria-hidden="true"></span>Valider';
+    setTimeout(function () {
+      S.exc = S.exc.filter(function (r) { return r.emps.length || r.vol.length; });
+      saved = clone(S);
+      btn.disabled = false; btn.textContent = 'Valider';
+      closeDialog();
+      setTimeout(function () { toast('Modifications enregistrées'); }, 180);
+    }, 700);
+  });
+})();
+</script>
+
+</body></html>
