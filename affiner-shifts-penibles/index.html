@@ -199,11 +199,204 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
   .select { margin: 0 -8px; padding: 0 8px 0 10px; }
   .th { padding-inline: 10px; }
 }
+
+/* ---------- Planning view: Figma "Collapse 9" (AA modal) and "Step 4 : Affichage sur shift" (hover preview) ---------- */
+html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
+.sk-appbar__nav a.is-current, .sk-appbar__end a.is-current { color: var(--blue); }
+.planning { display: flex; flex-direction: column; height: calc(100dvh - var(--appbar-h, 65px)); background: var(--white); }
+.planning[hidden] { display: none; }
+
+/* toolbar */
+.pl-toolbar { flex: none; display: flex; align-items: center; gap: 16px; height: 44px; padding: 0 12px; background: var(--grey-5); position: relative; z-index: 6; }
+.pl-date { flex: none; display: flex; align-items: center; gap: 4px; }
+.pl-date__field { height: 36px; display: flex; align-items: center; padding: 0 12px; background: var(--white); border: 1px solid var(--grey-10); border-radius: 4px; font-size: 14px; white-space: nowrap; }
+.pl-week { display: inline-flex; align-items: center; height: 20px; padding: 0 6px; margin-left: 12px; border-radius: 4px; background: var(--grey-10); color: var(--grey-50); font-size: 12px; white-space: nowrap; }
+.pl-views { flex: 1; display: flex; justify-content: center; gap: 32px; align-self: stretch; min-width: 0; }
+.pl-view { position: relative; padding: 0 4px; border: 0; background: none; font-size: 14px; color: var(--grey-50); cursor: pointer; }
+.pl-view:hover { color: var(--black); }
+.pl-view[aria-selected="true"] { color: var(--black); }
+.pl-view[aria-selected="true"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 2px 2px 0 0; background: var(--blue); }
+.pl-actions { flex: none; display: flex; align-items: center; gap: 8px; }
+.pl-sep { width: 1px; height: 36px; background: var(--grey-10); }
+.icon-btn[aria-disabled="true"] { color: var(--grey-30); cursor: default; }
+.icon-btn[aria-disabled="true"]:hover { background: none; }
+.aa-trigger { position: relative; }
+.aa-trigger .beta { position: absolute; left: 50%; bottom: -1px; transform: translateX(-50%); padding: 0 3px; border-radius: 2px; background: #f1e6fe; color: #8a38f5; font-size: 7px; line-height: 9px; font-weight: 600; pointer-events: none; }
+.aa-trigger.hint { animation: pulseAi 1.6s ease 3; }
+@keyframes pulseAi { 0%, 100% { box-shadow: 0 0 0 0 rgba(138,56,245,.35); } 50% { box-shadow: 0 0 0 6px rgba(138,56,245,0); } }
+
+/* grid */
+.pl-scroll { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.pl-grid { min-width: 1440px; min-height: 100%; display: flex; flex-direction: column; }
+.pl-row { display: flex; }
+.pl-ent { position: sticky; left: 0; z-index: 3; flex: none; width: 160px; background: var(--white); }
+.pl-tot { position: sticky; right: 0; z-index: 3; flex: none; width: 146px; background: var(--white); border-left: 1px solid var(--grey-10); }
+.pl-day { flex: 1 0 162px; min-width: 0; border-left: 1px solid var(--grey-10); }
+.pl-head { position: sticky; top: 0; z-index: 4; height: 60px; background: var(--white); border-bottom: 1px solid var(--grey-10); }
+.pl-head .pl-ent { z-index: 5; display: flex; align-items: flex-end; justify-content: center; gap: 8px; }
+.pl-head .pl-tot { z-index: 5; display: flex; align-items: flex-end; justify-content: center; }
+.pl-tab { height: 44px; display: flex; align-items: center; padding: 0 2px; border: 0; background: none; font-size: 14px; color: var(--grey-50); cursor: pointer; position: relative; }
+.pl-tab[aria-selected="true"] { color: var(--black); }
+.pl-tab[aria-selected="true"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--blue); }
+.pl-tot .pl-tab { padding: 0 20px; color: var(--black); }
+.pl-dh { position: relative; display: flex; align-items: center; justify-content: center; gap: 10px; padding-bottom: 14px; font-size: 14px; }
+.pl-dh b { font-size: 16px; font-weight: 600; }
+.pl-dh__icons { position: absolute; left: 12px; right: 12px; bottom: 6px; display: flex; justify-content: space-between; color: var(--black); }
+.pl-dh__icons .has-note { color: var(--blue); }
+
+.pl-wdg { height: 152px; border-bottom: 1px solid var(--grey-10); }
+.pl-wdg .pl-day { border-left-color: transparent; position: relative; display: flex; align-items: flex-end; justify-content: center; }
+.pl-wdg .pl-tot { border-left-color: transparent; }
+.pl-wdg.is-collapsed { height: 48px; }
+.pl-wdg.is-collapsed .pl-chart { display: none; }
+.pl-legend { position: absolute; left: 14px; top: 18px; display: flex; gap: 16px; font-size: 12px; color: var(--grey-50); white-space: nowrap; z-index: 1; }
+.pl-legend span { display: inline-flex; align-items: center; gap: 4px; }
+.pl-legend i { display: inline-block; }
+.pl-legend .ln { width: 8px; height: 1px; background: var(--grey-50); }
+.pl-legend .dt { width: 8px; height: 8px; border-radius: 50%; }
+.pl-wdg-ctrl { position: absolute; right: 12px; top: 10px; display: flex; gap: 4px; z-index: 1; }
+.pl-wdg-ctrl .icon-btn sk-icon { transition: transform .2s; }
+.pl-wdg.is-collapsed .pl-wdg-ctrl [data-collapse] sk-icon { transform: rotate(180deg); }
+.pl-chart { display: block; width: 110px; height: 86px; }
+
+.pl-emp { height: 49px; border-bottom: 1px solid var(--grey-10); }
+.pl-emp .pl-ent { display: flex; align-items: center; gap: 8px; padding: 0 12px; }
+.pl-av { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--blue-10); color: var(--blue); font-size: 14px; font-weight: 600; }
+.pl-nm { flex: 1; min-width: 0; font-size: 12px; line-height: 13px; overflow: hidden; }
+.pl-ct { flex: none; font-size: 12px; color: #ea830c; }
+.pl-emp .pl-tot { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 14px; }
+.pl-diff { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--error); }
+.pl-diff i { display: grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; background: #fdebd3; color: #ea830c; font-style: normal; font-size: 12px; line-height: 1; }
+.pl-cell { display: flex; padding: 4px 12px 4px 4px; }
+.pl-cell .sk-shift-wrap { flex: 1; min-width: 0; display: flex; }
+.pl-cell .sk-shift__menu { top: 4px; right: 4px; }
+
+/* shift card (Orora Shift, week view) */
+.pl-shift.sk-shift { width: 100%; height: 41px; padding: 6px 6px 6px 12px; justify-content: flex-start; gap: 4px; font-weight: 400; cursor: pointer; transition: filter .15s; }
+.pl-shift.sk-shift:hover { filter: brightness(.97); }
+.pl-shift .top { display: flex; justify-content: space-between; gap: 4px; width: 100%; }
+.pl-shift .t { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 12px; line-height: 14px; font-weight: 600; }
+.pl-shift .d { flex: none; font-size: 10px; line-height: 12px; }
+.pl-shift .p { max-width: calc(100% - 16px); overflow: hidden; text-overflow: ellipsis; font-size: 10px; line-height: 12px; }
+.pl-shift .sk-shift__glyph { right: 6px; bottom: 5px; }
+.pl-shift.is-new { animation: shiftIn .42s cubic-bezier(.3,1.4,.5,1) both, shiftRing 2.6s ease both; }
+@keyframes shiftIn { from { opacity: 0; transform: scale(.85); } }
+@keyframes shiftRing { 0%, 55% { box-shadow: 0 0 0 2px #8a38f5; } 100% { box-shadow: 0 0 0 2px rgba(138,56,245,0); } }
+.c-caisse { --sk-shift-fill: var(--sk-shift-canary-100); --sk-shift-bar: var(--sk-shift-canary-500); --sk-shift-ink: var(--sk-shift-canary-900); }
+.c-rayon { --sk-shift-fill: var(--sk-shift-plum-100); --sk-shift-bar: var(--sk-shift-plum-500); --sk-shift-ink: var(--sk-shift-plum-900); }
+.c-drive { --sk-shift-fill: var(--sk-shift-tomato-100); --sk-shift-bar: var(--sk-shift-tomato-500); --sk-shift-ink: var(--sk-shift-tomato-900); }
+.c-boucherie { --sk-shift-fill: var(--sk-shift-sky-100); --sk-shift-bar: var(--sk-shift-sky-500); --sk-shift-ink: var(--sk-shift-sky-900); }
+.c-boulangerie { --sk-shift-fill: var(--sk-shift-palatinate-100); --sk-shift-bar: var(--sk-shift-palatinate-500); --sk-shift-ink: var(--sk-shift-palatinate-900); }
+
+.pl-foot { position: sticky; bottom: 0; z-index: 4; height: 32px; margin-top: auto; background: var(--grey-5); border-top: 1px solid var(--grey-10); }
+.pl-foot .pl-ent, .pl-foot .pl-tot { background: var(--grey-5); }
+.pl-foot .pl-ent { display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 12px; }
+.pl-foot .pl-day { display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-size: 12px; font-weight: 600; }
+.pl-foot .pl-day span { font-size: 10px; font-weight: 400; color: var(--grey-50); }
+.pl-foot .pl-tot { display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; }
+
+/* shift preview on hover (Orora Preview card) */
+.preview { position: fixed; z-index: 30; pointer-events: none; color: var(--ink); opacity: 0; transform: translateY(4px); transition: opacity .14s ease, transform .14s ease; }
+.preview.is-on { opacity: 1; transform: none; }
+.preview .sk-shift-preview { gap: 8px; }
+.pv-title { font-size: 16px; line-height: 18px; font-weight: 600; }
+.pv-time { display: flex; justify-content: space-between; align-items: flex-end; width: 100%; font-size: 12px; line-height: 14px; }
+.pv-time b { font-weight: 600; }
+.pv-items { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.pv-item { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; line-height: 14px; }
+.pv-item sk-icon { flex: none; margin-top: -1px; }
+.pv-item.is-penible { color: var(--black); }
+
+/* "Assigner les shifts automatiquement" modal */
+.aa-backdrop { position: fixed; inset: 0; z-index: 18; display: grid; place-items: center; padding: 24px 16px; background: rgba(0,0,0,.5); opacity: 0; transition: opacity .2s ease; }
+.aa-backdrop.is-open { opacity: 1; }
+.aa-backdrop:not([hidden]) ~ .backdrop { background: rgba(0,0,0,.28); }
+.aa { width: min(624px, 100%); max-height: 100%; display: flex; flex-direction: column; background: var(--white); border-radius: 8px; box-shadow: var(--shadow-high); overflow: hidden; transform: translateY(16px) scale(.98); transition: transform .26s cubic-bezier(.2,.9,.3,1.1); }
+.aa-backdrop.is-open .aa { transform: none; }
+.aa-head { position: relative; flex: none; height: 103px; overflow: hidden; }
+.aa-head > svg { position: absolute; left: 0; top: 0; width: 100%; height: 103px; }
+.aa-close { position: absolute; top: 32px; right: 32px; }
+.aa-body { flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 24px; padding: 0 24px 24px; }
+.aa-title { display: flex; flex-direction: column; gap: 8px; padding-top: 24px; }
+.aa-title h2 { font-size: 32px; line-height: 36px; }
+.aa-title p { margin: 0; font-size: 14px; line-height: 16px; }
+.aa-field { display: flex; flex-direction: column; gap: 4px; }
+.aa-label { font-size: 12px; line-height: 13px; }
+.aa-input { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; padding: 0 12px 0 16px; border: 1px solid var(--grey-10); border-radius: 4px; background: var(--white); text-align: left; font-size: 14px; cursor: pointer; transition: border-color .15s; }
+.aa-input:hover { border-color: var(--grey-30); }
+.aa-input[aria-expanded="true"] { border-color: var(--blue); }
+.aa-input .chips { gap: 4px; }
+.aa-input .chip { background: var(--white); border: 1px solid var(--grey-10); color: var(--black); }
+.aa-input .chip .x { color: var(--black); }
+.aa-input .chip .x:hover { background: var(--grey-5); }
+.aa-opts .opt { padding: 8px 12px 8px 16px; }
+.aa-dock { box-shadow: none; }
+.aa-back { margin-right: auto; }
+.pill--ai { background: linear-gradient(68.6deg, #8a38f5 0%, #ff7575 73.77%, #ffb545 113.77%); color: var(--white); }
+.pill--ai:disabled { background: var(--grey-10); color: var(--grey-50); cursor: not-allowed; box-shadow: none; transform: none; }
+
+@media (max-width: 900px) {
+  .pl-toolbar { gap: 8px; overflow-x: auto; scrollbar-width: none; }
+  .pl-views { flex: none; gap: 20px; }
+  .pl-actions .hide-s, .pl-actions .pl-sep { display: none; }
+}
+@media (max-width: 640px) {
+  .pl-week, .pl-views { display: none; }
+  .pl-date__field { padding: 0 8px; font-size: 13px; }
+  .pl-grid { min-width: 1396px; }
+  .pl-ent { width: 116px; }
+  .pl-emp .pl-ent { padding: 0 8px; }
+  .pl-ct { display: none; }
+  .pl-tot { position: static; }
+  .pl-actions { margin-left: auto; }
+  .aa-head { height: 72px; }
+  .aa-close { top: 16px; right: 16px; }
+  .aa-body { padding-inline: 16px; }
+  .aa-title h2 { font-size: 24px; line-height: 28px; }
+  .aa-opts .opt label span { white-space: normal; }
+  .aa-dock { flex-wrap: wrap; }
+  .aa-dock .pill { flex: 1 1 auto; }
+  .aa-back { flex-basis: 100% !important; order: 3; }
+}
 </style>
 
-<header class="sk-appbar"><sk-icon name="skello-logo"></sk-icon><button class="sk-shop-select" type="button"><span class="sk-shop-select__icon"><sk-icon name="store" size="16"></sk-icon></span>Supermarché<sk-icon name="unfold-more" size="16"></sk-icon></button><nav class="sk-appbar__nav"><a href="#" data-nop>Planning</a><a href="#" data-nop>Missions</a><a href="#" data-nop>Employés</a><a href="#" data-nop>Rapport</a><a href="#" data-nop>Badgeuse</a><a href="#" data-nop>Pilotage</a></nav><div class="sk-appbar__end"><button class="sk-icon-button" type="button" aria-label="Paramètres"><sk-icon name="gear"></sk-icon></button><button class="sk-icon-button" type="button" aria-label="Accueil"><sk-icon name="home"></sk-icon></button><span class="sk-avatar">CM</span></div></header>
+<header class="sk-appbar"><sk-icon name="skello-logo"></sk-icon><button class="sk-shop-select" type="button"><span class="sk-shop-select__icon"><sk-icon name="store" size="16"></sk-icon></span>Supermarché<sk-icon name="unfold-more" size="16"></sk-icon></button><nav class="sk-appbar__nav"><a href="#planning" id="nav-planning">Planning</a><a href="#" data-nop>Missions</a><a href="#" data-nop>Employés</a><a href="#" data-nop>Rapport</a><a href="#" data-nop>Badgeuse</a><a href="#" data-nop>Pilotage</a></nav><div class="sk-appbar__end"><a class="sk-icon-button" href="#parametres" id="nav-settings" aria-label="Paramètres"><sk-icon name="gear"></sk-icon></a><button class="sk-icon-button" type="button" aria-label="Accueil"><sk-icon name="home"></sk-icon></button><span class="sk-avatar">CM</span></div></header>
 
-<div class="page">
+<div class="planning" id="view-planning">
+  <div class="pl-toolbar">
+    <div class="pl-date">
+      <button class="icon-btn" type="button" aria-label="Semaine précédente" data-nop><sk-icon name="chevron-left" size="20"></sk-icon></button>
+      <span class="pl-date__field">25 Sept - 1 Oct</span>
+      <button class="icon-btn" type="button" aria-label="Semaine suivante" data-nop><sk-icon name="chevron-right" size="20"></sk-icon></button>
+      <span class="pl-week">Week 39</span>
+      <button class="icon-btn" type="button" aria-label="Verrouiller la semaine" data-nop><sk-icon name="lock-open" size="20"></sk-icon></button>
+    </div>
+    <div class="pl-views" role="tablist" aria-label="Vue">
+      <button class="pl-view" type="button" role="tab" aria-selected="false" data-nop>Day</button>
+      <button class="pl-view" type="button" role="tab" aria-selected="true">Week</button>
+      <button class="pl-view" type="button" role="tab" aria-selected="false" data-nop>Month</button>
+    </div>
+    <div class="pl-actions">
+      <button class="icon-btn hide-s" type="button" aria-label="Filtres" data-nop><sk-icon name="filter" size="20"></sk-icon></button>
+      <span class="pl-sep"></span>
+      <button class="icon-btn" type="button" id="pl-undo" aria-label="Annuler" aria-disabled="true"><sk-icon name="arrow-undo" size="20"></sk-icon></button>
+      <button class="icon-btn hide-s" type="button" aria-label="Rétablir" aria-disabled="true"><sk-icon name="arrow-redo" size="20"></sk-icon></button>
+      <span class="pl-sep"></span>
+      <button class="icon-btn hide-s" type="button" aria-label="Shifts pénibles" data-nop><sk-icon name="fire" size="20"></sk-icon></button>
+      <button class="icon-btn hide-s" type="button" aria-label="Modifier" data-nop><sk-icon name="pen" size="20"></sk-icon></button>
+      <button class="icon-btn hide-s" type="button" aria-label="Imprimer" data-nop><sk-icon name="printer" size="20"></sk-icon></button>
+      <button class="icon-btn hide-s" type="button" aria-label="Plus d’actions" data-nop><sk-icon name="dot-vertical" size="20"></sk-icon></button>
+      <span class="pl-sep"></span>
+      <button class="icon-btn aa-trigger hint" type="button" id="aa-open" aria-label="Assigner les shifts automatiquement"><sk-icon name="smart-people" size="20"></sk-icon><span class="beta" aria-hidden="true">Beta</span></button>
+      <button class="pill pill--primary" type="button" data-nop>Publier le planning</button>
+    </div>
+  </div>
+  <div class="pl-scroll" id="pl-scroll">
+    <div class="pl-grid" id="pl-grid"></div>
+  </div>
+</div>
+
+<div class="page" id="view-settings" hidden>
   <nav class="side" aria-label="Paramètres">
     <div class="menu">
       <a href="#" data-nop><sk-icon name="clipboard"></sk-icon>Paramètres de l’établissement</a>
@@ -275,6 +468,45 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
   </main>
 </div>
 
+<div class="aa-backdrop" id="aa" hidden>
+  <div class="aa" role="dialog" aria-modal="true" aria-labelledby="aa-title">
+    <div class="aa-head">
+      <svg viewBox="0 0 624 103" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="aa-flubber" x1="0" y1="0.6" x2="1" y2="0.2"><stop offset="0" stop-color="#8a38f5" stop-opacity=".14"/><stop offset=".74" stop-color="#ff7575" stop-opacity=".1"/><stop offset="1" stop-color="#ffb545" stop-opacity=".1"/></linearGradient>
+        </defs>
+        <path d="M0 0H624V0H448C462 14 474 28 480 44C380 76 210 98 0 92Z" fill="url(#aa-flubber)"/>
+        <path d="M448 0H624V90C560 92 498 78 482 44C476 28 462 12 448 0Z" fill="#ff7575" fill-opacity=".09"/>
+      </svg>
+      <button class="icon-btn aa-close" type="button" id="aa-close" aria-label="Fermer"><sk-icon name="close" size="20"></sk-icon></button>
+    </div>
+    <div class="aa-body" id="aa-body">
+      <div class="aa-title">
+        <h2 id="aa-title">Assigner les shifts automatiquement</h2>
+        <p>Vos shifts non-assignés seront assignés automatiquement dans le respect de votre convention collective, des disponibilités et des compétences de vos employés.</p>
+      </div>
+      <div class="aa-field">
+        <span class="aa-label" id="aa-postes-label">Postes à assigner :</span>
+        <button class="aa-input" type="button" id="aa-postes" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="aa-postes-label"></button>
+      </div>
+      <div class="aa-field">
+        <span class="aa-label">Critères d’optimisation :</span>
+        <div class="opts aa-opts">
+          <div class="opt"><label><input class="cb" type="checkbox" id="a1" data-crit="1" checked><span>Minimiser les heures supplémentaires</span></label></div>
+          <div class="opt"><label><input class="cb" type="checkbox" id="a2" data-crit="2" checked><span>Prioriser l’affectation des employés permanents</span></label></div>
+          <div class="opt"><label><input class="cb" type="checkbox" id="a3" data-crit="3" checked><span>Prendre en compte les indisponibilités</span></label></div>
+          <div class="opt"><label><input class="cb" type="checkbox" id="a4" data-crit="4" checked><span>Favoriser l’équité des postes et horaires pénibles.</span></label><button class="pill pill--outlined pill--sm affiner" type="button" id="aa-affiner">Affiner</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="dlg-dock aa-dock" id="aa-dock">
+      <button class="pill pill--text aa-back" type="button" data-nop>Précédent</button>
+      <button class="pill pill--outlined" type="button" id="aa-rules">Personnaliser les règles</button>
+      <button class="pill pill--ai" type="button" id="aa-go">Assigner</button>
+    </div>
+  </div>
+</div>
+
 <div class="backdrop" id="backdrop" hidden>
   <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
     <div class="dlg-head">
@@ -315,6 +547,7 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
   </div>
 </div>
 
+<div class="preview" id="preview" role="tooltip" hidden></div>
 <div class="menu-pop" id="pop" role="listbox" hidden></div>
 <div class="tip" id="tip" role="tooltip" hidden></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
@@ -369,9 +602,6 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
       $('panel-main').hidden = !main; $('panel-other').hidden = main;
     });
   });
-  $('c4').addEventListener('change', function () {
-    if (this.checked) $('open').removeAttribute('data-off'); else $('open').setAttribute('data-off', '');
-  });
 
   /* ---------- dialog open / close ---------- */
   var backdrop = $('backdrop'), lastFocus = null;
@@ -387,7 +617,7 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
   function closeDialog() {
     closePop();
     backdrop.classList.remove('is-open');
-    setTimeout(function () { backdrop.hidden = true; document.body.style.overflow = ''; if (lastFocus) lastFocus.focus(); }, 220);
+    setTimeout(function () { backdrop.hidden = true; document.body.style.overflow = $('aa').hidden ? '' : 'hidden'; if (lastFocus) lastFocus.focus(); }, 220);
   }
   $('open').addEventListener('click', openDialog);
   $('close').addEventListener('click', closeDialog);
@@ -395,7 +625,8 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
     if (!$('pop').hidden) { closePop(true); return; }
-    if (!backdrop.hidden) closeDialog();
+    if (!backdrop.hidden) { closeDialog(); return; }
+    if (!$('aa').hidden) closeAA();
   });
   /* dock shadow: shown while content continues below, removed at the bottom (Orora note) */
   function updateDock() { var b = $('body'); $('dock').classList.toggle('has-shadow', b.scrollTop + b.clientHeight < b.scrollHeight - 2); }
@@ -477,8 +708,8 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
     var rm = e.target.closest('[data-rm]');
     if (rm && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); removeChip(rm); }
   });
-  function listFor(kind, i) { return kind === 'postes' ? S.postes : S.exc[i][kind]; }
-  function rerender(kind) { if (kind === 'postes') renderPostes(); else renderExc(); }
+  function listFor(kind, i) { return kind === 'postes' ? S.postes : kind === 'aa' ? AA.postes : S.exc[i][kind]; }
+  function rerender(kind) { if (kind === 'postes') renderPostes(); else if (kind === 'aa') renderAA(); else renderExc(); }
   function removeChip(el) {
     var kind = el.getAttribute('data-rm'), i = +el.getAttribute('data-idx'), v = el.getAttribute('data-v');
     var chip = el.closest('.chip'); chip.classList.add('is-leaving');
@@ -489,7 +720,7 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
       var l = listFor(kind, i), k = l.indexOf(v);
       if (k >= 0) l.splice(k, 1); else l.push(v);
       rerender(kind);
-      var sel = kind === 'postes' ? '#postes' : '[data-' + kind + '="' + i + '"]';
+      var sel = kind === 'postes' ? '#postes' : kind === 'aa' ? '#aa-postes' : '[data-' + kind + '="' + i + '"]';
       var nt = document.querySelector(sel); if (nt) { popTrigger = nt; nt.setAttribute('aria-expanded', 'true'); placePop(); }
     });
   }
@@ -586,6 +817,255 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
       setTimeout(function () { toast('Modifications enregistrées'); }, 180);
     }, 700);
   });
+
+  /* ================= Planning view ================= */
+  var DAYS = [['Lun', 25, 'sept'], ['Mar', 26, 'sept'], ['Mer', 27, 'sept'], ['Jeu', 28, 'sept'], ['Ven', 29, 'sept'], ['Sam', 30, 'sept'], ['Dim', 1, 'oct']];
+  var EMPS = [
+    { id: 'al', first: 'Alice', last: 'Leroy', ct: 40 }, { id: 'bd', first: 'Bruno', last: 'Dufour', ct: 40 },
+    { id: 'cp', first: 'Chloé', last: 'Petit', ct: 35 }, { id: 'dm', first: 'David', last: 'Martin', ct: 35 },
+    { id: 'eg', first: 'Émilie', last: 'Girard', ct: 35 }, { id: 'fr', first: 'François', last: 'Robert', ct: 35 },
+    { id: 'gl', first: 'Gaëlle', last: 'Leconte', ct: 40 }, { id: 'hm', first: 'Hugo', last: 'Moreau', ct: 40 },
+    { id: 'id', first: 'Inès', last: 'Durand', ct: 35 }, { id: 'jm', first: 'Julien', last: 'Morel', ct: 35 }
+  ];
+  var COLOR = { Caisse: 'c-caisse', Rayon: 'c-rayon', Drive: 'c-drive', Boucherie: 'c-boucherie', Boulangerie: 'c-boulangerie' };
+  var AA_POSTES = ['Boulangerie', 'Caisse', 'Drive', 'Boucherie', 'Rayon'];
+  var SHIFTS = [], seq = 0;
+  /* aa: true = non-assigned shift that "Assigner les shifts automatiquement" places on this employee */
+  function add(emp, days, s, e, dur, poste, extra) {
+    days.forEach(function (d) {
+      var sh = { id: 's' + (++seq), emp: emp, day: d, s: s, e: e, dur: dur, poste: poste, aa: false, on: true };
+      if (extra) for (var k in extra) sh[k] = extra[k];
+      if (sh.aa) sh.on = false;
+      SHIFTS.push(sh);
+    });
+  }
+  add('al', [0], '09:00', '22:00', 7.7, 'Caisse', { tasks: '1/3 tâches réalisées', note: 'Assurez-vous de porter l’uniforme approprié et d’avoir tout l’équipement ou les outils nécessaires.', comments: 2 });
+  add('al', [1, 2, 3, 4, 5, 6], '09:00', '22:00', 7.7, 'Caisse');
+  add('bd', [0, 1, 2, 3, 4, 5], '09:00', '17:00', 7.4, 'Rayon');
+  add('cp', [0, 1, 2, 3, 4, 5, 6], '15:00', '22:00', 6.8, 'Drive');
+  add('dm', [0, 1, 2, 3, 4, 5, 6], '09:00', '22:00', 7.4, 'Boucherie', { note: 'Réception de la livraison viande à 10h.' });
+  add('eg', [1, 3, 6], '08:30', '16:15', 7.5, 'Boulangerie');
+  add('fr', [2], '08:30', '16:15', 7.5, 'Boulangerie');
+  add('gl', [2, 3, 4, 5, 6], '09:00', '22:00', 7.4, 'Boucherie', { note: 'Inventaire chambre froide en fin de service.' });
+  add('fr', [4, 5], '08:30', '16:15', 7.5, 'Boulangerie', { aa: true });
+  add('hm', [0, 1, 2], '09:00', '17:00', 7.4, 'Rayon', { aa: true });
+  add('hm', [3, 4], '14:00', '22:00', 7.4, 'Caisse', { aa: true });
+  add('id', [0, 1, 4], '06:30', '13:30', 6.5, 'Boulangerie', { aa: true });
+  add('id', [5, 6], '15:00', '22:00', 6.8, 'Drive', { aa: true });
+  add('jm', [2], '15:00', '22:00', 6.8, 'Drive', { aa: true });
+  add('jm', [3, 4], '08:00', '15:00', 6.5, 'Boucherie', { aa: true });
+  add('jm', [5, 6], '09:00', '17:00', 7.4, 'Caisse', { aa: true });
+  var byId = {}; SHIFTS.forEach(function (s) { byId[s.id] = s; });
+  var lastBatch = null, newIds = [];
+
+  function mins(t) { var p = t.split(':'); return +p[0] * 60 + +p[1]; }
+  function fmtH(x) { var m = Math.round(x * 60), h = Math.floor(m / 60); m -= h * 60; return h + 'h' + (m < 10 ? '0' : '') + m; }
+  function num(x, dec) { return String(+x.toFixed(dec)); }
+  function visible(d, emp) { return SHIFTS.filter(function (s) { return s.on && (d === null || s.day === d) && (!emp || s.emp === emp); }); }
+
+  /* pénible type of a shift, read from the saved "Affiner les shifts pénibles" settings (first match, in table order) */
+  var PEN_TESTS = {
+    'Ouvertures': ['ouverture', function (s) { return mins(s.s) <= 9 * 60; }],
+    'Fermetures': ['fermeture', function (s) { return mins(s.e) >= 22 * 60; }],
+    'Travail de nuit': ['travail de nuit', function (s) { return mins(s.s) < 6 * 60 || mins(s.e) > 22 * 60; }],
+    'Samedis': ['samedi', function (s) { return s.day === 5; }],
+    'Dimanches': ['dimanche', function (s) { return s.day === 6; }],
+    'Week-ends': ['week-end', function (s) { return s.day >= 5; }]
+  };
+  function penibleOf(s) {
+    if (!$('c4').checked) return null;
+    for (var k = 0; k < saved.shifts.length; k++) {
+      var t = saved.shifts[k], test = PEN_TESTS[t.label];
+      if (t.on && test && test[1](s)) return test[0];
+    }
+    return null;
+  }
+
+  function need(d, h) {
+    if (h < 6 || h >= 22) return 0;
+    if (h < 9) return 1;
+    return [4, 4, 5, 4, 5, 5, 4][d] + (h >= 11 && h < 14 ? 1 : 0) + (h >= 17 && h < 20 ? 1 : 0);
+  }
+  function chartSVG(d) {
+    var H0 = 6, n = 17, W = 110, H = 86, MAX = 7, list = visible(d), bw = W / n, area = 'M0 ' + H, surplus = '', line = '';
+    var y = function (v) { return (H - Math.min(v, MAX) * H / MAX).toFixed(2); };
+    for (var i = 0; i < n; i++) {
+      var h = H0 + i, nd = need(d, h), x0 = (i * bw).toFixed(2), x1 = ((i + 1) * bw).toFixed(2);
+      var pl = list.filter(function (s) { return mins(s.s) < (h + 1) * 60 && mins(s.e) > h * 60; }).length;
+      area += 'V' + y(Math.min(pl, nd)) + 'H' + x1;
+      if (pl > nd) surplus += 'M' + x0 + ' ' + y(pl) + 'H' + x1 + 'V' + y(nd) + 'H' + x0 + 'Z';
+      line += (i ? 'V' + y(nd) : 'M0 ' + y(nd)) + 'H' + x1;
+    }
+    var out = '<path d="' + area + 'V' + H + 'Z" fill="url(#pg' + d + ')"/>' + (surplus ? '<path d="' + surplus + '" fill="#fbd5a5"/>' : '');
+    return '<svg class="pl-chart" viewBox="0 0 ' + W + ' ' + H + '" aria-hidden="true"><defs><linearGradient id="pg' + d + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b66fe" stop-opacity=".42"/><stop offset="1" stop-color="#2b66fe" stop-opacity=".08"/></linearGradient></defs>' +
+      out + '<path d="' + line + '" fill="none" stroke="#2b66fe" stroke-width="1.2"/></svg>';
+  }
+
+  function shiftHTML(s) {
+    return '<div class="sk-shift-wrap"><button type="button" class="sk-shift pl-shift ' + COLOR[s.poste] + (newIds.indexOf(s.id) >= 0 ? ' is-new' : '') + '" data-sid="' + s.id + '" aria-label="' + esc(s.poste + ', ' + s.s + ' - ' + s.e) + '">' +
+      '<span class="top"><span class="t">' + s.s + ' - ' + s.e + '</span><span class="d">' + num(s.dur, 1) + 'h</span></span><span class="p">' + esc(s.poste) + '</span>' +
+      (s.note ? '<span class="sk-shift__glyph"><sk-icon name="paper-rolled" size="12"></sk-icon></span>' : '') +
+      '</button><button type="button" class="sk-shift__menu" aria-label="Actions du shift" data-nop><sk-icon name="dot-vertical" size="12"></sk-icon></button></div>';
+  }
+  var wdgCollapsed = false;
+  function renderPlanning() {
+    var h = '<div class="pl-row pl-head"><div class="pl-ent"><button class="pl-tab" type="button" aria-selected="true">Employés</button><button class="pl-tab" type="button" aria-selected="false" data-nop>Postes</button></div>' +
+      DAYS.map(function (D, d) {
+        return '<div class="pl-day pl-dh"><span>' + D[0] + '</span><b>' + D[1] + '</b><span>' + D[2] + '</span><span class="pl-dh__icons"><sk-icon name="paper-rolled" size="12"' + (d === 1 ? ' class="has-note"' : '') + '></sk-icon><sk-icon name="lock-open" size="12"></sk-icon></span></div>';
+      }).join('') + '<div class="pl-tot"><span class="pl-tab" aria-selected="true">Total</span></div></div>';
+    h += '<div class="pl-row pl-wdg' + (wdgCollapsed ? ' is-collapsed' : '') + '"><div class="pl-ent"></div>' + DAYS.map(function (D, d) {
+      return '<div class="pl-day">' + (d === 0 ? '<span class="pl-legend"><span><i class="ln"></i>Besoins en personnel</span><span><i class="dt" style="background:#a9c2fe"></i>Planifié</span><span><i class="dt" style="background:#fbd5a5"></i>Surplus</span></span>' : '') +
+        (d === 6 ? '<span class="pl-wdg-ctrl"><button class="icon-btn icon-btn--sm" type="button" aria-label="Réglages du widget" data-nop><sk-icon name="filter" size="16"></sk-icon></button><button class="icon-btn icon-btn--sm" type="button" data-collapse aria-label="' + (wdgCollapsed ? 'Déplier' : 'Replier') + ' les besoins"><sk-icon name="chevron-up" size="16"></sk-icon></button></span>' : '') +
+        chartSVG(d) + '</div>';
+    }).join('') + '<div class="pl-tot"></div></div>';
+    var total = 0;
+    EMPS.forEach(function (E) {
+      var sum = visible(null, E.id).reduce(function (a, s) { return a + s.dur; }, 0), diff = E.ct - sum;
+      total += sum;
+      h += '<div class="pl-row pl-emp"><div class="pl-ent"><span class="pl-av">' + E.first[0] + E.last[0] + '</span><span class="pl-nm">' + esc(E.first) + '<br>' + esc(E.last) + '</span><span class="pl-ct">' + E.ct + 'h</span></div>' +
+        DAYS.map(function (D, d) { return '<div class="pl-day pl-cell">' + visible(d, E.id).map(shiftHTML).join('') + '</div>'; }).join('') +
+        '<div class="pl-tot"><span>' + fmtH(sum) + '</span>' + (diff > .01 ? '<span class="pl-diff"><i>–</i>' + fmtH(diff) + '</span>' : '') + '</div></div>';
+    });
+    h += '<div class="pl-row pl-foot"><div class="pl-ent">Heures travaillées <sk-icon name="help" size="14"></sk-icon></div>' + DAYS.map(function (D, d) {
+      var l = visible(d), pers = {}, hrs = 0;
+      l.forEach(function (s) { pers[s.emp] = 1; hrs += s.dur; });
+      return '<div class="pl-day"><span>' + Object.keys(pers).length + ' pers.</span>' + num(hrs, 2) + ' h</div>';
+    }).join('') + '<div class="pl-tot">' + num(total, 1) + 'h</div></div>';
+    $('pl-grid').innerHTML = h;
+    newIds = [];
+  }
+  $('pl-grid').addEventListener('click', function (e) {
+    if (e.target.closest('[data-collapse]')) { wdgCollapsed = !wdgCollapsed; renderPlanning(); }
+  });
+
+  /* ---------- hover preview on a shift ---------- */
+  var pv = $('preview'), pvFor = null, pvTimer = null, lastPointer = 'mouse';
+  function previewHTML(s) {
+    var pen = penibleOf(s), it = function (icon, txt, cls) { return '<div class="pv-item' + (cls ? ' ' + cls : '') + '"><sk-icon name="' + icon + '" size="16"></sk-icon><span>' + txt + '</span></div>'; };
+    var span = (mins(s.e) - mins(s.s)) / 60;
+    return '<div class="sk-shift-preview"><div class="pv-title">' + esc(s.poste) + '</div><div class="pv-time"><b>' + s.s + ' - ' + s.e + '</b><span>' + num(s.dur, 1) + 'h</span></div><div class="pv-items">' +
+      (span >= 6 ? it('flatware', '1 repas') : '') +
+      (s.tasks ? it('check', esc(s.tasks)) : '') +
+      (pen ? it('warning-outline', 'Shift pénible : ' + esc(pen), 'is-penible') : '') +
+      (s.note ? it('paper-rolled', esc(s.note)) : '') +
+      (s.comments ? it('chat-bubble-empty', s.comments + ' commentaire' + (s.comments > 1 ? 's' : '')) : '') +
+      '</div></div>';
+  }
+  function showPreview(btn) {
+    clearTimeout(pvTimer);
+    var s = byId[btn.getAttribute('data-sid')]; if (!s) return;
+    pvFor = btn; pv.innerHTML = previewHTML(s); pv.hidden = false;
+    var r = btn.getBoundingClientRect(), w = pv.offsetWidth, hgt = pv.offsetHeight;
+    var left = r.right - 22, top = r.top + 30;
+    if (left + w > window.innerWidth - 8) left = r.left - w + 22;
+    if (top + hgt > window.innerHeight - 8) top = r.top - hgt + 10;
+    pv.style.left = Math.max(8, left) + 'px'; pv.style.top = Math.max(8, top) + 'px';
+    requestAnimationFrame(function () { pv.classList.add('is-on'); });
+  }
+  function hidePreview() {
+    clearTimeout(pvTimer); pvFor = null; pv.classList.remove('is-on');
+    pvTimer = setTimeout(function () { if (!pvFor) pv.hidden = true; }, 140);
+  }
+  var grid = $('pl-grid');
+  grid.addEventListener('pointerdown', function (e) { lastPointer = e.pointerType || 'mouse'; });
+  grid.addEventListener('mouseover', function (e) {
+    if (lastPointer === 'touch') return;
+    var b = e.target.closest('.pl-shift'); if (!b || b === pvFor) return;
+    clearTimeout(pvTimer); pvTimer = setTimeout(function () { showPreview(b); }, pvFor ? 0 : 250);
+  });
+  grid.addEventListener('mouseout', function (e) {
+    var w = e.target.closest('.sk-shift-wrap'); if (!w || (e.relatedTarget && w.contains(e.relatedTarget))) return;
+    hidePreview();
+  });
+  grid.addEventListener('focusin', function (e) { var b = e.target.closest('.pl-shift'); if (b) showPreview(b); });
+  grid.addEventListener('focusout', function (e) { if (e.target.closest('.pl-shift')) hidePreview(); });
+  grid.addEventListener('click', function (e) {
+    var b = e.target.closest('.pl-shift'); if (!b) return;
+    if (lastPointer === 'touch') { if (pvFor === b) hidePreview(); else showPreview(b); return; }
+    toast('La modification du shift n’est pas incluse dans le prototype', true);
+  });
+  $('pl-scroll').addEventListener('scroll', function () { if (pvFor) hidePreview(); }, { passive: true });
+
+  /* ---------- "Assigner les shifts automatiquement" modal ---------- */
+  var AA = { postes: ['Boulangerie', 'Caisse', 'Drive', 'Boucherie'] }, aa = $('aa'), aaFocus = null;
+  function pending() { return SHIFTS.filter(function (s) { return s.aa && !s.on && AA.postes.indexOf(s.poste) >= 0; }); }
+  function renderAA() {
+    var b = $('aa-postes');
+    b.innerHTML = chipsHTML(AA.postes, 'aa', 0, b.offsetWidth ? b.offsetWidth - 48 : 520) + '<sk-icon name="unfold-more" size="24"></sk-icon>';
+    var n = pending().length, go = $('aa-go');
+    go.disabled = !n;
+    go.textContent = n ? 'Assigner ' + n + ' shift' + (n > 1 ? 's' : '') : 'Aucun shift à assigner';
+  }
+  function updateAADock() { var b = $('aa-body'); $('aa-dock').classList.toggle('has-shadow', b.scrollTop + b.clientHeight < b.scrollHeight - 2); }
+  function openAA() {
+    hidePreview(); $('aa-open').classList.remove('hint');
+    aaFocus = document.activeElement; aa.hidden = false; document.body.style.overflow = 'hidden';
+    renderAA();
+    requestAnimationFrame(function () { requestAnimationFrame(function () { aa.classList.add('is-open'); renderAA(); updateAADock(); }); });
+    setTimeout(function () { $('aa-close').focus(); }, 60);
+  }
+  function closeAA() {
+    closePop(); aa.classList.remove('is-open');
+    setTimeout(function () { aa.hidden = true; document.body.style.overflow = ''; if (aaFocus && document.contains(aaFocus)) aaFocus.focus(); }, 220);
+  }
+  $('aa-open').addEventListener('click', openAA);
+  $('aa-close').addEventListener('click', closeAA);
+  aa.addEventListener('mousedown', function (e) { if (e.target === aa) closeAA(); });
+  $('aa-body').addEventListener('scroll', function () { updateAADock(); closePop(); });
+  window.addEventListener('resize', function () { if (!aa.hidden) { renderAA(); updateAADock(); } });
+  $('aa-body').addEventListener('click', function (e) {
+    var rm = e.target.closest('[data-rm]');
+    if (rm) { e.stopPropagation(); removeChip(rm); return; }
+    var t = e.target.closest('#aa-postes');
+    if (t) multiPop(t, AA_POSTES, function () { return AA.postes; }, 'aa', 0);
+  });
+  $('aa-body').addEventListener('keydown', function (e) {
+    var rm = e.target.closest('[data-rm]');
+    if (rm && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); removeChip(rm); }
+  });
+  $('aa-affiner').addEventListener('click', openDialog);
+  $('aa-rules').addEventListener('click', function () { closeAA(); setTimeout(function () { location.hash = '#parametres'; }, 200); });
+  $('aa-go').addEventListener('click', function () {
+    var btn = this, batch = pending(); if (!batch.length) return;
+    btn.disabled = true; btn.innerHTML = '<span class="spin" aria-hidden="true"></span>Assignation en cours…';
+    setTimeout(function () {
+      batch.forEach(function (s) { s.on = true; });
+      lastBatch = batch; newIds = batch.map(function (s) { return s.id; });
+      $('pl-undo').removeAttribute('aria-disabled');
+      renderPlanning(); closeAA();
+      setTimeout(function () { toast(batch.length + ' shifts assignés automatiquement'); }, 180);
+    }, 1100);
+  });
+  $('pl-undo').addEventListener('click', function () {
+    if (!lastBatch) return;
+    lastBatch.forEach(function (s) { s.on = false; });
+    lastBatch = null; this.setAttribute('aria-disabled', 'true');
+    hidePreview(); renderPlanning(); toast('Assignation automatique annulée', true);
+  });
+
+  /* criteria are shared between the settings page and the AA modal */
+  function setCrit(i, v) {
+    $('c' + i).checked = v; $('a' + i).checked = v;
+    if (i === 4) ['open', 'aa-affiner'].forEach(function (id) { if (v) $(id).removeAttribute('data-off'); else $(id).setAttribute('data-off', ''); });
+  }
+  [1, 2, 3, 4].forEach(function (i) {
+    ['c', 'a'].forEach(function (p) { $(p + i).addEventListener('change', function () { setCrit(i, this.checked); }); });
+  });
+
+  /* ---------- routing: #planning (default) / #parametres ---------- */
+  function measure() { document.documentElement.style.setProperty('--appbar-h', document.querySelector('.sk-appbar').offsetHeight + 'px'); }
+  function route() {
+    var settings = location.hash === '#parametres';
+    $('view-settings').hidden = !settings; $('view-planning').hidden = settings;
+    document.documentElement.classList.toggle('is-planning', !settings);
+    $('nav-planning').classList.toggle('is-current', !settings);
+    $('nav-settings').classList.toggle('is-current', settings);
+    if (settings) $('nav-planning').removeAttribute('aria-current'); else $('nav-planning').setAttribute('aria-current', 'page');
+    hidePreview(); window.scrollTo(0, 0); measure();
+  }
+  window.addEventListener('hashchange', route);
+  window.addEventListener('resize', measure);
+  renderPlanning(); route();
 })();
 </script>
 
