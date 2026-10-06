@@ -639,7 +639,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   });
   /* dock shadow: shown while content continues below, removed at the bottom (Orora note) */
   function updateDock() { var b = $('body'); $('dock').classList.toggle('has-shadow', b.scrollTop + b.clientHeight < b.scrollHeight - 2); }
-  $('body').addEventListener('scroll', function () { updateDock(); closePop(); });
+  $('body').addEventListener('scroll', function () { updateDock(); if (Date.now() > keepPopUntil) closePop(); });
   window.addEventListener('resize', function () { updateDock(); closePop(); });
 
   /* ---------- chips with +N overflow ---------- */
@@ -755,16 +755,30 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
         '<span>' + esc(o.l) + '</span>' + (!popMulti && on ? '<sk-icon class="tick" name="check" size="16"></sk-icon>' : '') + '</button>';
     }).join('');
   }
+  /* dropdowns always open downwards: when there is no room below, scroll the modal body to make room */
+  var keepPopUntil = 0, padSc = null;
   function placePop() {
     if (!popTrigger) return;
-    var r = popTrigger.getBoundingClientRect(), w = Math.max(r.width, 220);
+    pop.style.maxHeight = '';
+    var r = popTrigger.getBoundingClientRect(), h = Math.min(pop.scrollHeight || 200, 280);
+    var room = window.innerHeight - 8 - (r.bottom + 4);
+    if (room < h) {
+      var sc = popTrigger.closest('.dlg-body, .aa-body');
+      if (sc) {
+        keepPopUntil = Date.now() + 250;
+        var max = sc.scrollHeight - sc.clientHeight;
+        if (sc.scrollTop + (h - room) > max) { padSc = sc; sc.style.paddingBottom = (parseFloat(getComputedStyle(sc).paddingBottom) + sc.scrollTop + (h - room) - max) + 'px'; }
+        sc.scrollTop += h - room; r = popTrigger.getBoundingClientRect();
+      }
+    }
+    var w = Math.max(r.width, 220), top = r.bottom + 4;
+    var left = Math.min(r.left, window.innerWidth - w - 8);
     pop.style.width = w + 'px';
-    var left = Math.min(r.left, window.innerWidth - w - 8), top = r.bottom + 4;
-    var h = pop.offsetHeight || 200;
-    if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 4);
+    pop.style.maxHeight = Math.max(120, Math.min(280, window.innerHeight - top - 8)) + 'px';
     pop.style.left = Math.max(8, left) + 'px'; pop.style.top = top + 'px';
   }
   function closePop(refocus) {
+    if (padSc) { padSc.style.paddingBottom = ''; padSc = null; }
     if (pop.hidden) return;
     var t = popTrigger;
     pop.classList.remove('is-open');
@@ -1029,7 +1043,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   $('aa-open').addEventListener('click', openAA);
   $('aa-close').addEventListener('click', closeAA);
   aa.addEventListener('mousedown', function (e) { if (e.target === aa) closeAA(); });
-  $('aa-body').addEventListener('scroll', function () { updateAADock(); closePop(); });
+  $('aa-body').addEventListener('scroll', function () { updateAADock(); if (Date.now() > keepPopUntil) closePop(); });
   window.addEventListener('resize', function () { if (!aa.hidden) { renderAA(); updateAADock(); } });
   $('aa-body').addEventListener('click', function (e) {
     var rm = e.target.closest('[data-rm]');
