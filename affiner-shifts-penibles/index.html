@@ -102,16 +102,10 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .dlg-dock.has-shadow { box-shadow: 0 -8px 24px rgba(0,0,0,.08); }
 .banner { display: flex; gap: 8px; align-items: center; padding: 8px; border-radius: 8px; background: var(--grey-5); color: var(--grey-50); font-size: 14px; line-height: 17px; }
 .banner sk-icon { flex: none; }
-.indep { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px; border: 1px dashed var(--grey-10); border-radius: 8px; }
-.indep__pill { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 14px; background: var(--grey-5); font-size: 12px; font-weight: 600; }
-.indep__plus { font-weight: 600; color: var(--grey-50); }
-.indep__txt { flex: 1 1 220px; font-size: 12px; line-height: 15px; color: var(--grey-50); }
 .block__head { display: flex; align-items: center; gap: 8px; }
 .block__head h3 { margin: 0; font-size: 14px; line-height: 16px; font-weight: 600; }
 .block__sub { margin: -4px 0 0; font-size: 12px; line-height: 15px; color: var(--grey-50); }
-.rule-note { display: flex; gap: 8px; align-items: flex-start; padding: 8px 12px; border-left: 2px solid var(--blue); background: var(--azure-5); font-size: 12px; line-height: 16px; color: var(--ink); }
-.rule-note sk-icon { flex: none; color: var(--blue); margin-top: 1px; }
-.postes .val { flex: 1; min-width: 0; }
+.postes .val { flex: 1; min-width: 0; padding-left: 8px; }
 .block { display: flex; flex-direction: column; gap: 12px; }
 .block > h3 { margin: 0; font-size: 14px; line-height: 16px; font-weight: 600; color: var(--black); }
 .thead { display: grid; grid-template-columns: 1fr 1fr; }
@@ -128,7 +122,7 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .select[aria-expanded="true"] { box-shadow: inset 0 0 0 1px var(--blue); }
 .select .val { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .select .val.ph { color: var(--grey-30); }
-.val.ex { color: var(--grey-30); font-style: italic; }
+.val.ex { color: var(--grey-30); font-style: normal; }
 .select[aria-disabled="true"] { cursor: not-allowed; }
 .select sk-icon { flex: none; transition: transform .2s; }
 .select[aria-expanded="true"] sk-icon.chev { transform: rotate(180deg); }
@@ -527,13 +521,6 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     <div class="dlg-body" id="body">
       <div class="banner"><sk-icon name="info" size="24"></sk-icon><span>Ces préférences ne sont pas garanties. En cas de sous-effectif, Skello couvre d’abord vos shifts et respecte vos règles de planification, quitte à ne pas répartir les shifts pénibles comme demandé.</span></div>
 
-      <div class="indep" aria-label="Deux critères indépendants">
-        <span class="indep__pill"><sk-icon name="clock" size="16"></sk-icon>Horaires pénibles</span>
-        <span class="indep__plus">+</span>
-        <span class="indep__pill"><sk-icon name="label" size="16"></sk-icon>Postes pénibles</span>
-        <span class="indep__txt">Deux décomptes indépendants : chacun est réparti équitablement de son côté.</span>
-      </div>
-
       <div class="block">
         <div class="block__head"><h3>Horaires pénibles</h3></div>
         <p class="block__sub">Comptés sur tous les postes. Chaque type coché est réparti séparément.</p>
@@ -550,10 +537,6 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
         <div>
           <div class="thead" style="grid-template-columns:1fr"><div class="th">Postes</div></div>
           <button class="postes" type="button" id="postes" aria-haspopup="listbox" aria-expanded="false"></button>
-        </div>
-        <div class="rule-note">
-          <sk-icon name="info" size="16"></sk-icon>
-          <div><b>Un poste pénible l’est sur tous ses créneaux.</b> Si un poste n’est pénible que sur un créneau (ex. Boulangerie à l’ouverture), cochez plutôt l’horaire correspondant ci-dessus.<br>Un shift en Caisse à l’ouverture compte dans les deux décomptes : une ouverture et un poste pénible.</div>
         </div>
       </div>
 
