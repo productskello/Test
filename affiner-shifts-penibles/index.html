@@ -108,7 +108,6 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .indep__txt { flex: 1 1 220px; font-size: 12px; line-height: 15px; color: var(--grey-50); }
 .block__head { display: flex; align-items: center; gap: 8px; }
 .block__head h3 { margin: 0; font-size: 14px; line-height: 16px; font-weight: 600; }
-.block__num { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--blue-10); color: var(--blue); font-size: 12px; font-weight: 600; }
 .block__sub { margin: -4px 0 0; font-size: 12px; line-height: 15px; color: var(--grey-50); }
 .rule-note { display: flex; gap: 8px; align-items: flex-start; padding: 8px 12px; border-left: 2px solid var(--blue); background: var(--azure-5); font-size: 12px; line-height: 16px; color: var(--ink); }
 .rule-note sk-icon { flex: none; color: var(--blue); margin-top: 1px; }
@@ -536,7 +535,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
       </div>
 
       <div class="block">
-        <div class="block__head"><span class="block__num">1</span><h3>Horaires pénibles</h3></div>
+        <div class="block__head"><h3>Horaires pénibles</h3></div>
         <p class="block__sub">Comptés sur tous les postes. Chaque type coché est réparti séparément.</p>
         <div>
           <div class="thead"><div class="th">Jours et horaires</div><div class="th">Période comptée<button class="help" type="button" data-tip="Période sur laquelle Skello compte les shifts pénibles déjà réalisés par chaque employé pour équilibrer la répartition. Ex. : « Sur les 4 dernières semaines » tient compte des week-ends travaillés le mois dernier." aria-label="Aide sur la période comptée"><sk-icon name="help" size="16"></sk-icon></button></div></div>
@@ -546,7 +545,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
       </div>
 
       <div class="block">
-        <div class="block__head"><span class="block__num">2</span><h3>Postes pénibles</h3></div>
+        <div class="block__head"><h3>Postes pénibles</h3></div>
         <p class="block__sub">Tous les shifts sur ces postes sont comptés, quel que soit l’horaire.</p>
         <div>
           <div class="thead" style="grid-template-columns:1fr"><div class="th">Postes</div></div>
