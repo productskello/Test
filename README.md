@@ -12,3 +12,14 @@ https://claude.ai/artifact/KvbyAyzjTnsk1QU333LRMo
 - `skello-kit.js` : kit Skello (police Gellix, tokens Orora, composants, élément `sk-icon`)
 
 Pour l'ouvrir : ouvrir `affiner-shifts-penibles/index.html` dans un navigateur (aucune dépendance externe).
+
+## custom-rules-phase-2/
+
+Prototype interactif « Custom Rules phase 2 » : la section Figma `39444:195291` du fichier ⚙️ Settings shop (9 écrans).
+
+- `index.html` : même base que `affiner-shifts-penibles/` (planning `#planning`, paramètres `#parametres`)
+  - **Modale AA** : le critère « Favoriser l’équité des postes et horaires pénibles » est décoché par défaut ; une fois coché, le bouton « Affiner » apparaît
+  - **« Affiner »** ouvre une modale en 2 étapes avec barre de progression : Étape 1/2 « Affiner les jours et horaires pénibles » (période « Semaine actuelle » / « 4 dernières semaines », exceptions par employé, volontaires), puis Étape 2/2 « Définir les postes pénibles ». Boutons « Précédent », « Valider et continuer », « Valider et terminer »
+  - **Survol d’un shift** : « Shift pénible : ouverture » (et le poste, s’il est défini comme pénible)
+  - **Paramètres** : Planification automatique → Règles et critères, info-bulle sur « Critères d’optimisations »
+- `skello-kit.js` : copie du kit Skello
