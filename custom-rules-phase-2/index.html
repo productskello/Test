@@ -153,6 +153,7 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .exc { display: grid; grid-template-columns: minmax(0, 1fr) 44px; }
 .exc .thead { grid-column: 1; }
 .exc .tbl { grid-column: 1; }
+.exc .thead, .exc .exc-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .exc-row { position: relative; }
 .exc-row.is-new { animation: rowIn .22s ease; }
 .exc-row.is-leaving { animation: rowOut .18s ease forwards; overflow: hidden; }
@@ -557,7 +558,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
         <div class="block">
           <div class="block__head"><h3>Exceptions par employé</h3></div>
           <div class="exc">
-            <div class="thead"><div class="th">Employés</div><div class="th">Volontaires<button class="help" type="button" id="help" aria-label="Aide sur les volontaires" hidden><sk-icon name="help" size="16"></sk-icon></button></div></div>
+            <div class="thead"><div class="th">Employés</div><div class="th">Volontaires<button class="help" type="button" id="help" aria-label="Aide sur les volontaires" hidden><sk-icon name="help" size="16"></sk-icon></button></div><div class="th">Évite</div></div>
             <div class="tbl" id="exc"></div>
           </div>
         </div>
@@ -604,7 +605,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
         { label: 'Week-ends', on: true, period: '4w' }
       ],
       night: { from: '22:00', to: '06:00' },
-      exc: [{ id: 1, emps: [], vol: [] }],
+      exc: [{ id: 1, emps: [], vol: [], avoid: [] }],
       postes: []
     };
   }
@@ -639,7 +640,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   var backdrop = $('backdrop'), lastFocus = null;
   function openDialog() {
     S = clone(saved); showErrors = false; ['open', 'aa-affiner'].forEach(function (id) { $(id).classList.remove('hint'); });
-    if (!S.exc.length) S.exc.push({ id: nextId++, emps: [], vol: [] });
+    if (!S.exc.length) S.exc.push({ id: nextId++, emps: [], vol: [], avoid: [] });
     setStep(1, true); renderAll();
     $('aa').classList.add('is-covered');
     lastFocus = document.activeElement;
@@ -690,13 +691,15 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     }).join('');
     $('err').hidden = !(showErrors && S.shifts.some(function (s) { return s.on && !s.period; }));
   }
-  function cellWidth() { var t = $('exc'); return t && t.offsetWidth ? t.offsetWidth / 2 - 56 : 190; }
+  function cellWidth() { var t = $('exc'); return t && t.offsetWidth ? t.offsetWidth / 3 - 56 : 120; }
   function renderExc(newId) {
     var w = cellWidth();
     $('exc').innerHTML = S.exc.map(function (r, i) {
+      r.avoid = r.avoid || [];
       return '<div class="tr exc-row' + (r.id === newId ? ' is-new' : '') + '" data-row="' + r.id + '">' +
         '<div class="td"><button type="button" class="select' + (r.emps.length ? ' has-chips' : '') + '" data-emps="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Employés">' + chipsHTML(r.emps, 'emps', i, w) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
         '<div class="td"><button type="button" class="select' + (r.vol.length ? ' has-chips' : '') + '" data-vol="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Volontaires">' + chipsHTML(r.vol, 'vol', i, w) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
+        '<div class="td"><button type="button" class="select' + (r.avoid.length ? ' has-chips' : '') + '" data-avoid="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Évite">' + chipsHTML(r.avoid, 'avoid', i, w) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
         (S.exc.length > 1 ? '<button type="button" class="icon-btn icon-btn--sm row-del" data-del="' + i + '" aria-label="Supprimer l’exception"><sk-icon name="bin" size="16"></sk-icon></button>' : '') + '</div>';
     }).join('') + '<div class="add-row"><button class="pill pill--text pill--sm" type="button" id="add"><sk-icon name="more" size="16"></sk-icon>Ajouter</button></div>';
   }
@@ -725,6 +728,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
       return;
     }
     if ((t = e.target.closest('[data-emps]'))) { multiPop(t, EMPLOYEES, function () { return S.exc[+t.getAttribute('data-emps')].emps; }, 'emps', +t.getAttribute('data-emps')); return; }
+    if ((t = e.target.closest('[data-avoid]'))) { multiPop(t, SHIFT_TYPES, function () { return S.exc[+t.getAttribute('data-avoid')].avoid; }, 'avoid', +t.getAttribute('data-avoid')); return; }
     if ((t = e.target.closest('[data-vol]'))) { multiPop(t, SHIFT_TYPES, function () { return S.exc[+t.getAttribute('data-vol')].vol; }, 'vol', +t.getAttribute('data-vol')); return; }
     if ((t = e.target.closest('#postes'))) { multiPop(t, POSTES, function () { return S.postes; }, 'postes', 0); return; }
     if ((t = e.target.closest('[data-del]'))) {
@@ -734,7 +738,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
       return;
     }
     if (e.target.closest('#add')) {
-      var id = nextId++; S.exc.push({ id: id, emps: [], vol: [] }); renderExc(id); updateDock();
+      var id = nextId++; S.exc.push({ id: id, emps: [], vol: [], avoid: [] }); renderExc(id); updateDock();
       var b = document.querySelector('[data-row="' + id + '"] [data-emps]'); if (b) { b.focus(); b.click(); }
     }
   });
@@ -879,7 +883,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     }
     btn.disabled = true; btn.innerHTML = '<span class="spin" aria-hidden="true"></span>Valider et terminer';
     setTimeout(function () {
-      S.exc = S.exc.filter(function (r) { return r.emps.length || r.vol.length; });
+      S.exc = S.exc.filter(function (r) { return r.emps.length || r.vol.length || r.avoid.length; });
       saved = clone(S);
       btn.disabled = false; btn.textContent = 'Valider et terminer';
       closeDialog();
