@@ -107,6 +107,17 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .block__sub { margin: -8px 0 0; font-size: 12px; line-height: 15px; color: var(--grey-50); }
 .postes .val { flex: 1; min-width: 0; padding-left: 8px; }
 .block { display: flex; flex-direction: column; gap: 12px; }
+.dlg-desc { margin: 8px 0 0; font-size: 14px; line-height: 18px; color: var(--grey-50); }
+.dlg-desc:empty, .block__sub:empty, .hint:empty { display: none; }
+.banner:has(> span:empty) { display: none; }
+.hint { margin: 0; font-size: 12px; line-height: 15px; color: var(--grey-50); }
+[data-ctip-off] { display: none !important; }
+.copy-switch { position: fixed; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 60; display: flex; align-items: center; gap: 4px; padding: 4px 4px 4px 12px; border-radius: 20px; background: var(--ink); color: var(--white); font-size: 12px; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+.copy-switch span { margin-right: 4px; opacity: .7; }
+html.is-planning .copy-switch { display: none; }
+html.is-planning .aa-backdrop:not([hidden]) ~ .copy-switch, html.is-planning .backdrop:not([hidden]) ~ .copy-switch { display: flex; }
+.copy-switch button { height: 28px; padding: 0 12px; border: 0; border-radius: 14px; background: transparent; color: var(--white); font-size: 12px; font-weight: 600; cursor: pointer; transition: background .15s, color .15s; }
+.copy-switch button[aria-pressed="true"] { background: var(--white); color: var(--ink); }
 .block > h3 { margin: 0; font-size: 14px; line-height: 16px; font-weight: 600; color: var(--black); }
 .thead { display: grid; grid-template-columns: 1fr 1fr; }
 .th { display: flex; align-items: center; gap: 2px; height: 36px; padding: 0 16px 8px; font-size: 12px; color: var(--grey-50); white-space: nowrap; overflow: hidden; }
@@ -143,6 +154,7 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .exc { display: grid; grid-template-columns: minmax(0, 1fr) 44px; }
 .exc .thead { grid-column: 1; }
 .exc .tbl { grid-column: 1; }
+.exc .thead, .exc .tr { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .exc-row { position: relative; }
 .exc-row.is-new { animation: rowIn .22s ease; }
 .exc-row.is-leaving { animation: rowOut .18s ease forwards; overflow: hidden; }
@@ -226,7 +238,8 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
 .pl-sep { width: 1px; height: 36px; background: var(--grey-10); }
 .icon-btn[aria-disabled="true"] { color: var(--grey-30); cursor: default; }
 .icon-btn[aria-disabled="true"]:hover { background: none; }
-.aa-trigger { position: relative; }
+.aa-trigger { position: relative; color: var(--black); opacity: 1; }
+.aa-trigger sk-icon, .aa-trigger svg, .aa-trigger svg path { color: var(--black); fill: currentColor; opacity: 1; }
 .aa-trigger .beta { position: absolute; left: 50%; bottom: -1px; transform: translateX(-50%); padding: 0 3px; border-radius: 2px; background: #f1e6fe; color: #8a38f5; font-size: 7px; line-height: 9px; font-weight: 600; pointer-events: none; }
 .aa-trigger.hint { animation: pulseAi 1.6s ease 3; }
 @keyframes pulseAi { 0%, 100% { box-shadow: 0 0 0 0 rgba(138,56,245,.35); } 50% { box-shadow: 0 0 0 6px rgba(138,56,245,0); } }
@@ -440,7 +453,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
           <div class="opt"><label><input class="cb" type="checkbox" id="c1" checked><span>Minimiser les heures supplémentaires</span></label></div>
           <div class="opt"><label><input class="cb" type="checkbox" id="c2" checked><span>Prioriser l’affectation des employés permanents</span></label></div>
           <div class="opt"><label><input class="cb" type="checkbox" id="c3" checked><span>Prendre en compte les indisponibilités</span></label></div>
-          <div class="opt"><label><input class="cb" type="checkbox" id="c4" checked><span>Favoriser l’équité des postes et horaires pénibles.</span></label><button class="pill pill--outlined pill--sm affiner hint" type="button" id="open">Définir les shifts pénibles</button></div>
+          <div class="opt"><label><input class="cb" type="checkbox" id="c4" checked><span data-c="c4"></span></label><button class="pill pill--outlined pill--sm affiner hint" type="button" id="open">Définir les shifts pénibles</button></div>
         </div>
       </section>
 
@@ -501,7 +514,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
           <div class="opt"><label><input class="cb" type="checkbox" id="a1" data-crit="1" checked><span>Minimiser les heures supplémentaires</span></label></div>
           <div class="opt"><label><input class="cb" type="checkbox" id="a2" data-crit="2" checked><span>Prioriser l’affectation des employés permanents</span></label></div>
           <div class="opt"><label><input class="cb" type="checkbox" id="a3" data-crit="3" checked><span>Prendre en compte les indisponibilités</span></label></div>
-          <div class="opt"><label><input class="cb" type="checkbox" id="a4" data-crit="4" checked><span>Favoriser l’équité des postes et horaires pénibles.</span></label><button class="pill pill--outlined pill--sm affiner" type="button" id="aa-affiner">Définir les shifts pénibles</button></div>
+          <div class="opt"><label><input class="cb" type="checkbox" id="a4" data-crit="4" checked><span data-c="c4"></span></label><button class="pill pill--outlined pill--sm affiner" type="button" id="aa-affiner">Définir les shifts pénibles</button></div>
         </div>
       </div>
     </div>
@@ -516,44 +529,48 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
 <div class="backdrop" id="backdrop" hidden>
   <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
     <div class="dlg-head">
-      <h2 id="dlg-title">Affiner les shifts pénibles</h2>
+      <h2 id="dlg-title" data-c="title"></h2>
+      <p class="dlg-desc" data-c="desc"></p>
       <button class="icon-btn dlg-close" type="button" id="close" aria-label="Fermer"><sk-icon name="close" size="20"></sk-icon></button>
     </div>
     <div class="dlg-body" id="body">
-      <div class="banner"><sk-icon name="info" size="24"></sk-icon><span>Assurer votre activité reste la priorité : en cas d’imprévu ou de règle légale, Skello ne pourra pas suivre toutes vos préférences.</span></div>
+      <div class="banner"><sk-icon name="info" size="24"></sk-icon><span data-c="banner"></span></div>
 
-      <div class="block">
-        <div class="block__head"><h3>Jours et horaires pénibles</h3></div>
-        <p class="block__sub" hidden>Comptés sur tous les postes. Chaque type coché est réparti séparément.</p>
+      <div class="block" id="block-shifts">
+        <div class="block__head"><h3 data-c="h_shifts"></h3><button class="help" type="button" data-ctip="tip_shifts" aria-label="Informations sur les jours et horaires pénibles"><sk-icon name="info" size="16"></sk-icon></button></div>
+        <p class="block__sub" data-c="d_shifts"></p>
         <div>
-          <div class="thead"><div class="th">Jours et horaires</div><div class="th">Période comptée<button class="help" type="button" data-tip="Il s’agit de la période prise en compte pour paramétrer la rotation équitablement." aria-label="Aide sur la période comptée"><sk-icon name="help" size="16"></sk-icon></button></div></div>
+          <div class="thead"><div class="th"><span data-c="th_s1"></span></div><div class="th"><span data-c="th_s2"></span><button class="help" type="button" data-ctip="tip_period" aria-label="Aide sur la période comptée"><sk-icon name="help" size="16"></sk-icon></button></div></div>
           <div class="tbl" id="shifts"></div>
         </div>
-        <div class="err-msg" id="err" hidden><sk-icon name="warning-solid" size="16"></sk-icon><span>Sélectionnez une période comptée pour chaque shift pénible coché.</span></div>
+        <p class="hint" data-c="hint"></p>
+        <div class="err-msg" id="err" hidden><sk-icon name="warning-solid" size="16"></sk-icon><span data-c="err"></span></div>
       </div>
 
-      <div class="block">
-        <div class="block__head"><h3>Exceptions par employé</h3></div>
+      <div class="block" id="block-exc">
+        <div class="block__head"><h3 data-c="h_exc"></h3></div>
+        <p class="block__sub" data-c="d_exc"></p>
         <div class="exc">
-          <div class="thead"><div class="th">Employés</div><div class="th">Volontaires<button class="help" type="button" id="help" aria-label="Aide sur les volontaires"><sk-icon name="help" size="16"></sk-icon></button></div></div>
+          <div class="thead"><div class="th"><span data-c="th_e1"></span></div><div class="th"><span data-c="th_e2"></span><button class="help" type="button" id="help" aria-label="Aide sur les volontaires"><sk-icon name="help" size="16"></sk-icon></button></div><div class="th"><span data-c="th_e3"></span></div></div>
           <div class="tbl" id="exc"></div>
         </div>
       </div>
 
       <div class="block" id="block-postes">
-        <div class="block__head"><h3>Postes pénibles</h3><button class="help" type="button" data-tip="Certains postes sont plus pénibles que d’autres. Ainsi Skello favorise une répartition équitable de certains de ces postes entre les salariés dans la mesure du possible." aria-label="Informations sur les postes pénibles"><sk-icon name="info" size="16"></sk-icon></button></div>
-        <p class="block__sub" hidden>Les postes ne sont pas reliés aux jours et horaires pénibles.</p>
+        <div class="block__head"><h3 data-c="h_postes"></h3><button class="help" type="button" data-ctip="tip_postes" aria-label="Informations sur les postes pénibles"><sk-icon name="info" size="16"></sk-icon></button></div>
+        <p class="block__sub" data-c="d_postes"></p>
         <div>
           <button class="postes" type="button" id="postes" aria-haspopup="listbox" aria-expanded="false" aria-label="Postes pénibles"></button>
         </div>
       </div>
     </div>
     <div class="dlg-dock" id="dock">
-      <button class="pill pill--primary" type="button" id="save">Valider</button>
+      <button class="pill pill--primary" type="button" id="save" data-c="save"></button>
     </div>
   </div>
 </div>
 
+<div class="copy-switch" role="group" aria-label="Version de la copy"><span>Copy</span><button type="button" data-copy="current" aria-pressed="false">Actuelle</button><button type="button" data-copy="proposed" aria-pressed="true">Proposée</button></div>
 <div class="preview" id="preview" role="tooltip" hidden></div>
 <div class="menu-pop" id="pop" role="listbox" hidden></div>
 <div class="tip" id="tip" role="tooltip" hidden></div>
@@ -562,10 +579,44 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var PERIODS = [
-    { v: 'week', l: 'Sur la semaine planifiée' },
-    { v: '4w', l: 'Sur les 4 dernières semaines' }
-  ];
+  /* two copy versions of the dialog, switched from the "Copy" control (prototype only) */
+  var COPY = {
+    current: {
+      c4: 'Favoriser l’équité des postes et horaires pénibles.',
+      title: 'Affiner les shifts pénibles', desc: '',
+      banner: 'Assurer votre activité reste la priorité : en cas d’imprévu ou de règle légale, Skello ne pourra pas suivre toutes vos préférences.',
+      tip_shifts: 'Créneaux contraignants dont l’objectif est d’être répartis équitablement entre vos employés.', h_shifts: 'Jours et horaires pénibles', d_shifts: '', th_s1: 'Jours et horaires', th_s2: 'Période comptée',
+      tip_period: 'Il s’agit de la période prise en compte pour paramétrer la rotation équitablement.', hint: '',
+      err: 'Sélectionnez une période comptée pour chaque shift pénible coché.',
+      h_exc: 'Exceptions par employé', d_exc: '', th_e1: 'Employés', th_e2: 'Volontaires', th_e3: 'Évite',
+      help: 'Les employés volontaires reçoivent en priorité les shifts pénibles choisis.',
+      h_postes: 'Postes pénibles', d_postes: '',
+      tip_postes: 'Certains postes sont plus pénibles que d’autres. Ainsi Skello favorise une répartition équitable de certains de ces postes entre les salariés dans la mesure du possible.',
+      save: 'Valider',
+      periods: { week: 'Sur la semaine planifiée', '4w': 'Sur les 4 dernières semaines' },
+      order: ['block-shifts', 'block-exc', 'block-postes']
+    },
+    proposed: {
+      c4: 'Faire tourner les shifts pénibles',
+      title: 'Définir les shifts pénibles',
+      desc: '',
+      banner: 'Skello vise la répartition la plus équitable possible des shifts pénibles. Selon vos contraintes légales et la disponibilité de vos équipes, l’équité parfaite ne peut toutefois pas être garantie.',
+      tip_shifts: 'Créneaux contraignants dont l’objectif est d’être répartis équitablement entre vos employés.', h_shifts: 'Jours et horaires pénibles', d_shifts: '',
+      th_s1: 'Jours et horaires', th_s2: 'Sur la période comptée', tip_period: 'Historique pris en compte pour équilibrer l’attribution des jours et horaires pénibles.',
+      hint: '',
+      err: 'Choisissez une période pour chaque jour ou horaire coché.',
+      h_exc: 'Employés volontaires', d_exc: '',
+      th_e1: 'Employés', th_e2: 'Volontaires pour', th_e3: 'Évite',
+      help: 'Ces employés reçoivent en priorité les shifts pénibles choisis.',
+      h_postes: 'Postes pénibles', d_postes: '', tip_postes: 'Postes contraignants à répartir équitablement entre les employés. Les postes pénibles sont indépendants des jours et horaires pénibles. Ils sont comptabilisés séparément.',
+      save: 'Enregistrer',
+      periods: { week: 'La semaine planifiée', '4w': 'Les 4 dernières semaines' },
+      order: ['block-shifts', 'block-exc', 'block-postes']
+    }
+  };
+  var copyMode = 'proposed';
+  var PERIODS = [{ v: 'week' }, { v: '4w' }];
+  PERIODS.forEach(function (p) { Object.defineProperty(p, 'l', { get: function () { return COPY[copyMode].periods[p.v]; } }); });
   var EMPLOYEES = ['Alice Leroy', 'Bruno Dufour', 'Chloé Petit', 'David Martin', 'Émilie Girard', 'François Robert', 'Gaëlle Leconte', 'Hugo Moreau', 'Inès Durand', 'Julien Morel'];
   var SHIFT_TYPES = ['Ouvertures', 'Fermetures', 'Travail de nuit', 'Samedis', 'Dimanches', 'Week-ends', 'Jours fériés'];
   var POSTES = ['Caisse', 'Boulangerie', 'Rayon', 'Boucherie', 'Drive', 'Accueil', 'Sécurité'];
@@ -581,7 +632,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
         { label: 'Jours fériés', on: false, period: null }
       ],
       night: { from: '21:00', to: '06:00' },
-      exc: [{ id: 1, emps: [], vol: [] }],
+      exc: [{ id: 1, emps: [], vol: [], avoid: [] }],
       postes: []
     };
   }
@@ -616,7 +667,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   var backdrop = $('backdrop'), lastFocus = null;
   function openDialog() {
     S = clone(saved); showErrors = false; $('open').classList.remove('hint');
-    if (!S.exc.length) S.exc.push({ id: nextId++, emps: [], vol: [] });
+    if (!S.exc.length) S.exc.push({ id: nextId++, emps: [], vol: [], avoid: [] });
     renderAll();
     lastFocus = document.activeElement;
     backdrop.hidden = false;
@@ -666,13 +717,14 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     }).join('');
     $('err').hidden = !(showErrors && S.shifts.some(function (s) { return s.on && !s.period; }));
   }
-  function cellWidth() { var t = $('exc'); return t && t.offsetWidth ? t.offsetWidth / 2 - 56 : 190; }
+  function cellWidth() { var t = $('exc'); return t && t.offsetWidth ? t.offsetWidth / 3 - 48 : 130; }
   function renderExc(newId) {
     var w = cellWidth();
     $('exc').innerHTML = S.exc.map(function (r, i) {
       return '<div class="tr exc-row' + (r.id === newId ? ' is-new' : '') + '" data-row="' + r.id + '">' +
         '<div class="td"><button type="button" class="select' + (r.emps.length ? ' has-chips' : '') + '" data-emps="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Employés">' + chipsHTML(r.emps, 'emps', i, w, 'Ex. : Alice Leroy') + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
         '<div class="td"><button type="button" class="select' + (r.vol.length ? ' has-chips' : '') + '" data-vol="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Volontaires">' + chipsHTML(r.vol, 'vol', i, w, 'Ex. : Samedis') + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
+        '<div class="td"><button type="button" class="select' + (r.avoid.length ? ' has-chips' : '') + '" data-avoid="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Évite">' + chipsHTML(r.avoid, 'avoid', i, w, 'Ex. : Dimanches') + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
         (S.exc.length > 1 ? '<button type="button" class="icon-btn icon-btn--sm row-del" data-del="' + i + '" aria-label="Supprimer l’exception"><sk-icon name="bin" size="16"></sk-icon></button>' : '') + '</div>';
     }).join('') + '<div class="add-row"><button class="pill pill--text pill--sm" type="button" id="add"><sk-icon name="more" size="16"></sk-icon>Ajouter</button></div>';
   }
@@ -702,6 +754,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     }
     if ((t = e.target.closest('[data-emps]'))) { multiPop(t, EMPLOYEES, function () { return S.exc[+t.getAttribute('data-emps')].emps; }, 'emps', +t.getAttribute('data-emps')); return; }
     if ((t = e.target.closest('[data-vol]'))) { multiPop(t, SHIFT_TYPES, function () { return S.exc[+t.getAttribute('data-vol')].vol; }, 'vol', +t.getAttribute('data-vol')); return; }
+    if ((t = e.target.closest('[data-avoid]'))) { multiPop(t, SHIFT_TYPES, function () { return S.exc[+t.getAttribute('data-avoid')].avoid; }, 'avoid', +t.getAttribute('data-avoid')); return; }
     if ((t = e.target.closest('#postes'))) { multiPop(t, POSTES, function () { return S.postes; }, 'postes', 0); return; }
     if ((t = e.target.closest('[data-del]'))) {
       var idx = +t.getAttribute('data-del'), row = t.closest('.exc-row');
@@ -710,7 +763,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
       return;
     }
     if (e.target.closest('#add')) {
-      var id = nextId++; S.exc.push({ id: id, emps: [], vol: [] }); renderExc(id); updateDock();
+      var id = nextId++; S.exc.push({ id: id, emps: [], vol: [], avoid: [] }); renderExc(id); updateDock();
       var b = document.querySelector('[data-row="' + id + '"] [data-emps]'); if (b) { b.focus(); b.click(); }
     }
   });
@@ -729,6 +782,8 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     openPop(trigger, options.map(function (o) { return { v: o, l: o }; }), true, getSel, function (v) {
       var l = listFor(kind, i), k = l.indexOf(v);
       if (k >= 0) l.splice(k, 1); else l.push(v);
+      /* a day or time slot is either volunteered or avoided on a row, never both */
+      if (k < 0 && (kind === 'vol' || kind === 'avoid')) { var o = S.exc[i][kind === 'vol' ? 'avoid' : 'vol'], ko = o.indexOf(v); if (ko >= 0) o.splice(ko, 1); }
       rerender(kind);
       var sel = kind === 'postes' ? '#postes' : kind === 'aa' ? '#aa-postes' : '[data-' + kind + '="' + i + '"]';
       var nt = document.querySelector(sel); if (nt) { popTrigger = nt; nt.setAttribute('aria-expanded', 'true'); placePop(); }
@@ -816,11 +871,10 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     requestAnimationFrame(function () { tip.classList.add('is-on'); });
   }
   function hideTip() { tip.classList.remove('is-on'); setTimeout(function () { if (!tip.classList.contains('is-on')) tip.hidden = true; }, 120); }
-  var helpText = 'Les employés volontaires reçoivent en priorité les shifts pénibles choisis.';
-  ['mouseenter', 'focus'].forEach(function (ev) { $('help').addEventListener(ev, function () { showTip($('help'), helpText); }); });
+  ['mouseenter', 'focus'].forEach(function (ev) { $('help').addEventListener(ev, function () { showTip($('help'), COPY[copyMode].help); }); });
   ['mouseleave', 'blur'].forEach(function (ev) { $('help').addEventListener(ev, hideTip); });
-  [].forEach.call(document.querySelectorAll('.help[data-tip]'), function (b) {
-    ['mouseenter', 'focus'].forEach(function (ev) { b.addEventListener(ev, function () { showTip(b, b.getAttribute('data-tip')); }); });
+  [].forEach.call(document.querySelectorAll('.help[data-ctip]'), function (b) {
+    ['mouseenter', 'focus'].forEach(function (ev) { b.addEventListener(ev, function () { showTip(b, COPY[copyMode][b.getAttribute('data-ctip')]); }); });
     ['mouseleave', 'blur'].forEach(function (ev) { b.addEventListener(ev, hideTip); });
   });
   $('body').addEventListener('mouseover', function (e) { var m = e.target.closest('.more'); if (m) { showTip(m, m.getAttribute('title')); m.removeAttribute('data-t'); } });
@@ -836,11 +890,11 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
       var blk = $('shifts'); blk.classList.remove('shake'); void blk.offsetWidth; blk.classList.add('shake');
       return;
     }
-    btn.disabled = true; btn.innerHTML = '<span class="spin" aria-hidden="true"></span>Valider';
+    btn.disabled = true; btn.innerHTML = '<span class="spin" aria-hidden="true"></span>' + esc(COPY[copyMode].save);
     setTimeout(function () {
-      S.exc = S.exc.filter(function (r) { return r.emps.length || r.vol.length; });
+      S.exc = S.exc.filter(function (r) { return r.emps.length || r.vol.length || r.avoid.length; });
       saved = clone(S);
-      btn.disabled = false; btn.textContent = 'Valider';
+      btn.disabled = false; btn.textContent = COPY[copyMode].save;
       closeDialog();
       setTimeout(function () { toast('Modifications enregistrées'); }, 180);
     }, 700);
@@ -1098,8 +1152,24 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   }
   window.addEventListener('hashchange', route);
   window.addEventListener('resize', measure);
+  /* ---------- copy versions (prototype switch) ---------- */
+  function applyCopy() {
+    var c = COPY[copyMode];
+    document.querySelectorAll('[data-c]').forEach(function (el) { el.textContent = c[el.getAttribute('data-c')] || ''; });
+    document.querySelectorAll('[data-ctip]').forEach(function (b) { if (c[b.getAttribute('data-ctip')]) b.removeAttribute('data-ctip-off'); else b.setAttribute('data-ctip-off', ''); });
+    var body = $('body');
+    c.order.forEach(function (id) { body.appendChild($(id)); });
+    document.querySelectorAll('[data-copy]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-copy') === copyMode)); });
+    if (!backdrop.hidden) { renderAll(); updateDock(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) {
+    b.addEventListener('click', function () { copyMode = b.getAttribute('data-copy'); closePop(); hideTip(); applyCopy(); });
+  });
+  applyCopy();
+
   renderPlanning(); route();
 })();
 </script>
+
 
 </body></html>
