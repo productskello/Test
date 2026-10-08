@@ -556,9 +556,9 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
         </div>
 
         <div class="block">
-          <div class="block__head"><h3>Exceptions par employé</h3></div>
+          <div class="block__head"><h3>Volonté par employé</h3></div>
           <div class="exc">
-            <div class="thead"><div class="th">Employés</div><div class="th">Volontaires<button class="help" type="button" id="help" aria-label="Aide sur les volontaires" hidden><sk-icon name="help" size="16"></sk-icon></button></div><div class="th">Évite</div></div>
+            <div class="thead"><div class="th">Employés</div><div class="th">Souhaitent<button class="help" type="button" id="help" aria-label="Aide sur les souhaits" hidden><sk-icon name="help" size="16"></sk-icon></button></div><div class="th">Préfèrent éviter</div></div>
             <div class="tbl" id="exc"></div>
           </div>
         </div>
@@ -698,9 +698,9 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
       r.avoid = r.avoid || [];
       return '<div class="tr exc-row' + (r.id === newId ? ' is-new' : '') + '" data-row="' + r.id + '">' +
         '<div class="td"><button type="button" class="select' + (r.emps.length ? ' has-chips' : '') + '" data-emps="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Employés">' + chipsHTML(r.emps, 'emps', i, w) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
-        '<div class="td"><button type="button" class="select' + (r.vol.length ? ' has-chips' : '') + '" data-vol="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Volontaires">' + chipsHTML(r.vol, 'vol', i, w) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
-        '<div class="td"><button type="button" class="select' + (r.avoid.length ? ' has-chips' : '') + '" data-avoid="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Évite">' + chipsHTML(r.avoid, 'avoid', i, w) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
-        (S.exc.length > 1 ? '<button type="button" class="icon-btn icon-btn--sm row-del" data-del="' + i + '" aria-label="Supprimer l’exception"><sk-icon name="bin" size="16"></sk-icon></button>' : '') + '</div>';
+        '<div class="td"><button type="button" class="select' + (r.vol.length ? ' has-chips' : '') + '" data-vol="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Souhaitent">' + chipsHTML(r.vol, 'vol', i, w) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
+        '<div class="td"><button type="button" class="select' + (r.avoid.length ? ' has-chips' : '') + '" data-avoid="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Préfèrent éviter">' + chipsHTML(r.avoid, 'avoid', i, w) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
+        (S.exc.length > 1 ? '<button type="button" class="icon-btn icon-btn--sm row-del" data-del="' + i + '" aria-label="Supprimer la ligne"><sk-icon name="bin" size="16"></sk-icon></button>' : '') + '</div>';
     }).join('') + '<div class="add-row"><button class="pill pill--text pill--sm" type="button" id="add"><sk-icon name="more" size="16"></sk-icon>Ajouter</button></div>';
   }
   function renderPostes() {
