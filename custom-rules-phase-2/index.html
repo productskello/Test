@@ -180,6 +180,7 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .menu-item[aria-selected="true"]:hover, .menu-item[aria-selected="true"]:focus-visible { background: var(--sk-hover, var(--grey-5)); }
 .menu-item .cb { pointer-events: none; }
 .menu-item .tick { margin-left: auto; color: var(--sk-text, var(--ink)); }
+.menu-empty { margin: 0; padding: 8px 12px; font-size: 14px; line-height: 17px; color: var(--grey-50); }
 
 /* tooltip */
 .tip { position: fixed; z-index: 45; max-width: 260px; padding: 8px 10px; border-radius: 4px; background: var(--ink); color: var(--white); font-size: 12px; line-height: 15px; pointer-events: none; opacity: 0; transform: translateY(2px); transition: opacity .12s, transform .12s; }
@@ -728,8 +729,9 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
       return;
     }
     if ((t = e.target.closest('[data-emps]'))) { multiPop(t, EMPLOYEES, function () { return S.exc[+t.getAttribute('data-emps')].emps; }, 'emps', +t.getAttribute('data-emps')); return; }
-    if ((t = e.target.closest('[data-avoid]'))) { multiPop(t, SHIFT_TYPES, function () { return S.exc[+t.getAttribute('data-avoid')].avoid; }, 'avoid', +t.getAttribute('data-avoid')); return; }
-    if ((t = e.target.closest('[data-vol]'))) { multiPop(t, SHIFT_TYPES, function () { return S.exc[+t.getAttribute('data-vol')].vol; }, 'vol', +t.getAttribute('data-vol')); return; }
+    /* a day or time chosen in "Souhaitent" is hidden from "Préfèrent éviter" on the same row, and the other way round */
+    if ((t = e.target.closest('[data-avoid]'))) { var ra = S.exc[+t.getAttribute('data-avoid')]; multiPop(t, SHIFT_TYPES.filter(function (v) { return ra.vol.indexOf(v) < 0; }), function () { return ra.avoid; }, 'avoid', +t.getAttribute('data-avoid')); return; }
+    if ((t = e.target.closest('[data-vol]'))) { var rv = S.exc[+t.getAttribute('data-vol')]; multiPop(t, SHIFT_TYPES.filter(function (v) { return rv.avoid.indexOf(v) < 0; }), function () { return rv.vol; }, 'vol', +t.getAttribute('data-vol')); return; }
     if ((t = e.target.closest('#postes'))) { multiPop(t, POSTES, function () { return S.postes; }, 'postes', 0); return; }
     if ((t = e.target.closest('[data-del]'))) {
       var idx = +t.getAttribute('data-del'), row = t.closest('.exc-row');
@@ -777,6 +779,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   }
   function drawPop() {
     var sel = popSel();
+    if (!popOpts.length) { pop.innerHTML = '<p class="menu-empty">Tous les jours et horaires sont déjà choisis dans l’autre colonne.</p>'; return; }
     pop.innerHTML = popOpts.map(function (o) {
       var on = sel.indexOf(o.v) >= 0;
       return '<button type="button" class="menu-item" role="option" aria-selected="' + on + '" data-v="' + esc(o.v) + '">' +
