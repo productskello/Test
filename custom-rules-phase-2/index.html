@@ -784,26 +784,21 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
         '<span>' + esc(o.l) + '</span>' + (!popMulti && on ? '<sk-icon class="tick" name="check" size="16"></sk-icon>' : '') + '</button>';
     }).join('');
   }
-  /* dropdowns always open downwards: when there is no room below, scroll the modal body to make room */
+  /* dropdowns stay inside their modal: they open downwards when there is room, otherwise upwards, and scroll inside when the list is longer than the room */
   var keepPopUntil = 0, padSc = null;
   function placePop() {
     if (!popTrigger) return;
     pop.style.maxHeight = '';
-    var r = popTrigger.getBoundingClientRect(), h = Math.min(pop.scrollHeight || 200, 280);
-    var room = window.innerHeight - 8 - (r.bottom + 4);
-    if (room < h) {
-      var sc = popTrigger.closest('.dlg-body, .aa-body');
-      if (sc) {
-        keepPopUntil = Date.now() + 250;
-        var max = sc.scrollHeight - sc.clientHeight;
-        if (sc.scrollTop + (h - room) > max) { padSc = sc; sc.style.paddingBottom = (parseFloat(getComputedStyle(sc).paddingBottom) + sc.scrollTop + (h - room) - max) + 'px'; }
-        sc.scrollTop += h - room; r = popTrigger.getBoundingClientRect();
-      }
-    }
-    var w = Math.max(r.width, 220), top = r.bottom + 4;
+    var r = popTrigger.getBoundingClientRect(), full = Math.min(pop.scrollHeight || 200, 280);
+    var box = popTrigger.closest('.dialog, .aa');
+    var bTop = box ? box.getBoundingClientRect().top : 0, bBot = box ? box.getBoundingClientRect().bottom : window.innerHeight;
+    var below = bBot - 8 - (r.bottom + 4), above = r.top - 4 - (bTop + 8);
+    var down = below >= full || below >= above;
+    var maxH = Math.max(80, Math.min(280, down ? below : above)), h = Math.min(full, maxH);
+    var w = Math.max(r.width, 220), top = down ? r.bottom + 4 : r.top - 4 - h;
     var left = Math.min(r.left, window.innerWidth - w - 8);
     pop.style.width = w + 'px';
-    pop.style.maxHeight = Math.max(120, Math.min(280, window.innerHeight - top - 8)) + 'px';
+    pop.style.maxHeight = maxH + 'px';
     pop.style.left = Math.max(8, left) + 'px'; pop.style.top = top + 'px';
   }
   function closePop(refocus) {
