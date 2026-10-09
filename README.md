@@ -19,7 +19,7 @@ Prototype interactif « Custom Rules phase 2 » : la section Figma `39444:195291
 
 - `index.html` : même base que `affiner-shifts-penibles/` (planning `#planning`, paramètres `#parametres`)
   - **Modale AA** : le critère « Favoriser l’équité des postes et horaires pénibles » est décoché par défaut ; une fois coché, le bouton « Affiner » apparaît
-  - **« Affiner »** ouvre une modale en 2 étapes avec barre de progression : Étape 1/2 « Affiner les jours et horaires pénibles » (période « Semaine actuelle » / « 4 dernières semaines », « Volonté par employé » : Employés, Souhaitent, Préfèrent éviter), puis Étape 2/2 « Définir les postes pénibles ». Boutons « Précédent », « Valider et continuer », « Valider et terminer »
+  - **« Affiner »** ouvre une modale de 876 px en 2 étapes avec barre de progression : Étape 1/2 « Affiner les jours et horaires pénibles », un tableau à 4 colonnes (jour ou horaire coché, « Basé sur la période » : « Semaine actuelle » / « 4 dernières semaines », « Volontaires », « Préfèrent éviter » ; un employé choisi dans une colonne n’est plus proposé dans l’autre pour la même ligne), puis Étape 2/2 « Définir les postes pénibles ». Boutons « Précédent », « Valider et continuer », « Valider et terminer »
   - **Survol d’un shift** : « Shift pénible : ouverture » (et le poste, s’il est défini comme pénible)
   - **Paramètres** : Planification automatique → Règles et critères, info-bulle sur « Critères d’optimisations »
 - `skello-kit.js` : copie du kit Skello

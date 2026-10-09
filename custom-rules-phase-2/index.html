@@ -101,10 +101,18 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .dlg-dock { flex: none; display: flex; justify-content: flex-end; gap: 12px; padding: 16px 24px 24px; transition: box-shadow .2s; }
 .dlg-dock.has-shadow { box-shadow: 0 -8px 24px rgba(0,0,0,.08); }
 .dlg-back { margin-right: auto; }
+/* step dialog: 876px wide (Figma "Affiner les jours et horaires pénibles"), 4-column table */
+#backdrop .dialog { width: min(876px, 100%); }
+.tbl-scroll { overflow-x: auto; }
+.grid4 { min-width: 640px; }
+.grid4 .thead, .grid4 .tr { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.grid4 .chip { max-width: 96px; }
+.grid4 .td.has-info label { flex: 0 1 auto; }
+.grid4 .td.has-info .help { margin-left: -4px; }
 .progress { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.progress i { height: 4px; background: var(--grey-10); transition: background .3s ease; }
+.progress i { height: 6px; background: var(--grey-10); transition: background .3s ease; }
 .progress i.is-on { background: var(--blue); }
-.step-label { flex: none; margin: 0; padding: 12px 24px 0; font-size: 12px; line-height: 14px; color: var(--grey-50); }
+.step-label { flex: none; margin: 0; padding: 8px 24px 8px; font-size: 12px; line-height: 14px; color: var(--grey-50); }
 .step[hidden] { display: none; }
 .step { display: flex; flex-direction: column; gap: 24px; }
 .step.is-in { animation: stepIn .24s ease; }
@@ -120,7 +128,7 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .block > h3 { margin: 0; font-size: 14px; line-height: 16px; font-weight: 600; color: var(--black); }
 .thead { display: grid; grid-template-columns: 1fr 1fr; }
 .th { display: flex; align-items: center; gap: 2px; height: 36px; padding: 0 16px 8px; font-size: 12px; color: var(--grey-50); white-space: nowrap; overflow: hidden; }
-.th .help, .block__head .help { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-left: 2px; border: 0; padding: 0; background: none; cursor: help; color: var(--grey-50); position: relative; }
+.th .help, .block__head .help, .td .help { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-left: 2px; border: 0; padding: 0; background: none; cursor: help; color: var(--grey-50); position: relative; }
 .block__head .help { margin-left: -6px; }
 .tbl { border: 1px solid var(--grey-10); border-radius: 4px; }
 .tr { display: grid; grid-template-columns: 1fr 1fr; min-height: 44px; border-top: 1px solid var(--grey-10); }
@@ -150,17 +158,6 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .err-msg[hidden] { display: none; }
 .shake { animation: shake .36s ease; }
 
-.exc { display: grid; grid-template-columns: minmax(0, 1fr) 44px; }
-.exc .thead { grid-column: 1; }
-.exc .tbl { grid-column: 1; }
-.exc .thead, .exc .exc-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.exc-row { position: relative; }
-.exc-row.is-new { animation: rowIn .22s ease; }
-.exc-row.is-leaving { animation: rowOut .18s ease forwards; overflow: hidden; }
-.row-del { position: absolute; right: -40px; top: 8px; opacity: .55; transition: opacity .15s, background .15s; }
-.exc-row:hover .row-del, .row-del:focus-visible { opacity: 1; }
-.add-row { display: flex; align-items: center; min-height: 44px; padding: 0 10px; border-top: 1px solid var(--grey-10); }
-.tbl > .add-row:first-child { border-top: 0; }
 .postes { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px 0 8px; border: 1px solid var(--grey-10); border-radius: 4px; background: var(--white); cursor: pointer; width: 100%; text-align: left; transition: border-color .15s; }
 .postes:hover { border-color: var(--grey-30); }
 .postes[aria-expanded="true"] { border-color: var(--blue); }
@@ -218,8 +215,6 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
   .dlg-dock { padding-inline: 16px; }
   .step-label { padding-inline: 16px; }
   .dlg-dock .pill { padding-inline: 12px; }
-  .exc { grid-template-columns: minmax(0, 1fr) 36px; }
-  .row-del { right: -34px; }
   .td { padding: 0 8px; }
   .select { margin: 0 -8px; padding: 0 8px 0 10px; }
   .th { padding-inline: 10px; }
@@ -456,7 +451,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
 
     <div class="panel" id="panel-main">
       <section class="crit">
-        <div class="crit-title"><h2>Critères d’optimisations</h2><button class="help--title help" type="button" data-tip="Les critères d’optimisations répartissent au mieux les shifts pénibles, dans la limite du cadre légal et de vos effectifs." aria-label="Aide sur les critères d’optimisations"><sk-icon name="help" size="20"></sk-icon></button></div>
+        <div class="crit-title"><h2>Critères d’optimisations</h2><button class="help--title help" type="button" data-tip="Les critères d’optimisation affinent au maximum la planification automatique en fonction de votre organisation." aria-label="Aide sur les critères d’optimisations"><sk-icon name="help" size="20"></sk-icon></button></div>
         <p>Définissez les contraintes que Skello doit prendre en compte pour assigner automatiquement des personnes à des shifts.</p>
         <div class="opts">
           <div class="opt"><label><input class="cb" type="checkbox" id="c1" checked><span>Minimiser les heures supplémentaires</span></label></div>
@@ -545,30 +540,24 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     <p class="step-label" id="step-label">Étape 1/2</p>
     <div class="dlg-body" id="body">
       <div class="step" id="step-1">
-        <div class="banner"><sk-icon name="info" size="24"></sk-icon><span>La planification automatique répartit au mieux les jours et horaires pénibles, dans la limite du cadre légal et de vos effectifs.</span></div>
+        <div class="banner"><sk-icon name="info" size="24"></sk-icon><span>La planification automatique répartit au mieux les jours et horaires pénibles, dans la limite du cadre légal et de vos effectifs. Les employés volontaires sont affectés en priorité, ceux qui préfèrent les éviter en dernier recours.</span></div>
 
         <div class="block">
           <div class="block__head"><h3>Jours et horaires pénibles</h3><button class="help" type="button" data-tip="Créneaux contraignants nécessitant d’être répartis équitablement entre les employés." aria-label="Aide sur les jours et horaires pénibles"><sk-icon name="help" size="16"></sk-icon></button></div>
-          <div>
-            <div class="thead"><div class="th">Jours et horaires pénibles</div><div class="th">Basé sur la période<button class="help" type="button" data-tip="Historique pris en compte pour équilibrer l’attribution des jours et horaires pénibles." aria-label="Aide sur la période"><sk-icon name="help" size="16"></sk-icon></button></div></div>
-            <div class="tbl" id="shifts"></div>
+          <div class="tbl-scroll">
+            <div class="grid4">
+              <div class="thead"><div class="th">Jours et horaires pénibles</div><div class="th">Basé sur la période<button class="help" type="button" data-tip="Historique pris en compte pour équilibrer l’attribution des jours et horaires pénibles." aria-label="Aide sur la période"><sk-icon name="help" size="16"></sk-icon></button></div><div class="th">Volontaires</div><div class="th">Préfèrent éviter</div></div>
+              <div class="tbl" id="shifts"></div>
+            </div>
           </div>
           <div class="err-msg" id="err" hidden><sk-icon name="warning-solid" size="16"></sk-icon><span>Sélectionnez une période pour chaque jour ou horaire pénible coché.</span></div>
-        </div>
-
-        <div class="block">
-          <div class="block__head"><h3>Volonté par employé</h3><button class="help" type="button" data-tip="La volonté par employé permet d’améliorer l’ordre d’attribution des jours et horaires pénibles selon les préférences de chacun." aria-label="Aide sur la volonté par employé"><sk-icon name="help" size="16"></sk-icon></button></div>
-          <div class="exc">
-            <div class="thead"><div class="th">Employés</div><div class="th">Souhaitent<button class="help" type="button" id="help" aria-label="Aide sur les souhaits" hidden><sk-icon name="help" size="16"></sk-icon></button></div><div class="th">Préfèrent éviter</div></div>
-            <div class="tbl" id="exc"></div>
-          </div>
         </div>
       </div>
 
       <div class="step" id="step-2" hidden>
         <div class="banner"><sk-icon name="info" size="24"></sk-icon><span>La planification automatique répartit au mieux les postes pénibles, dans la limite du cadre légal et de vos effectifs.</span></div>
         <div class="block" id="block-postes">
-          <div class="block__head"><h3>Postes pénibles</h3><button class="help" type="button" data-tip="Certains postes sont plus pénibles que d’autres : Skello les répartit équitablement entre les employés, dans la mesure du possible." aria-label="Aide sur les postes pénibles"><sk-icon name="help" size="16"></sk-icon></button></div>
+          <div class="block__head"><h3>Postes pénibles</h3><button class="help" type="button" data-tip="Certains postes sont plus pénibles que d’autres : Skello les répartit équitablement entre les employés compétents, dans la mesure du possible." aria-label="Aide sur les postes pénibles"><sk-icon name="help" size="16"></sk-icon></button></div>
           <button class="postes" type="button" id="postes" aria-haspopup="listbox" aria-expanded="false" aria-label="Postes pénibles"></button>
         </div>
       </div>
@@ -592,25 +581,25 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     { v: 'week', l: 'Semaine actuelle' },
     { v: '4w', l: '4 dernières semaines' }
   ];
-  var EMPLOYEES = ['Camille Allain', 'Alice Leroy', 'Bruno Dufour', 'Chloé Petit', 'David Martin', 'Émilie Girard', 'François Robert', 'Gaëlle Leconte', 'Hugo Moreau', 'Inès Durand', 'Julien Morel'];
-  var SHIFT_TYPES = ['Ouvertures', 'Fermetures', 'Travail de nuit', 'Samedis', 'Dimanches', 'Week-ends'];
-  var POSTES = ['Caisse', 'Boulangerie', 'Rayon', 'Boucherie', 'Drive', 'Accueil', 'Sécurité'];
+  var EMPLOYEES = ['Anna Wintour', 'Camille Allain', 'Marc Verte', 'Marte Gedou', 'Michel Deguerre', 'Alice Leroy', 'Bruno Dufour', 'Chloé Petit', 'David Martin', 'Émilie Girard', 'François Robert', 'Gaëlle Leconte', 'Hugo Moreau', 'Inès Durand', 'Julien Morel'];
+    var POSTES = ['Caisse', 'Boulangerie', 'Rayon', 'Boucherie', 'Drive', 'Accueil', 'Sécurité'];
   function initial() {
     return {
       shifts: [
-        { label: 'Ouvertures', on: true, period: 'week' },
-        { label: 'Fermetures', on: true, period: 'week' },
-        { label: 'Travail de nuit', on: true, period: 'week' },
-        { label: 'Samedis', on: false, period: null },
-        { label: 'Dimanches', on: false, period: null },
-        { label: 'Week-ends', on: true, period: '4w' }
+        { label: 'Ouvertures', on: true, period: 'week', vol: [], avoid: [] },
+        { label: 'Fermetures', on: true, period: 'week', vol: [], avoid: [] },
+        { label: 'Travail de nuit', on: true, period: 'week', vol: [], avoid: [] },
+        { label: 'Samedis', on: false, period: null, vol: [], avoid: [] },
+        { label: 'Dimanches', on: false, period: null, vol: [], avoid: [] },
+        { label: 'Week-ends', on: true, period: '4w', vol: [], avoid: [] },
+        { label: 'Jours fériés', on: false, period: null, vol: [], avoid: [] }
       ],
-      night: { from: '22:00', to: '06:00' },
-      exc: [{ id: 1, emps: [], vol: [], avoid: [] }],
+      /* night work: a shift that covers part of the midnight - 5:00 interval */
+      night: { from: '00:00', to: '05:00' },
       postes: []
     };
   }
-  var saved = initial(), S = clone(saved), nextId = 2, showErrors = false, step = 1;
+  var saved = initial(), S = clone(saved), showErrors = false, step = 1;
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
   function periodLabel(v) { var p = PERIODS.filter(function (x) { return x.v === v; })[0]; return p ? p.l : ''; }
@@ -641,7 +630,6 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   var backdrop = $('backdrop'), lastFocus = null;
   function openDialog() {
     S = clone(saved); showErrors = false; ['open', 'aa-affiner'].forEach(function (id) { $(id).classList.remove('hint'); });
-    if (!S.exc.length) S.exc.push({ id: nextId++, emps: [], vol: [], avoid: [] });
     setStep(1, true); renderAll();
     $('aa').classList.add('is-covered');
     lastFocus = document.activeElement;
@@ -670,11 +658,11 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   window.addEventListener('resize', function () { updateDock(); closePop(); });
 
   /* ---------- chips with +N overflow ---------- */
-  function chipsHTML(list, kind, idx, maxW, example) {
+  function chipsHTML(list, kind, idx, maxW, example, chipMax) {
     if (!list.length) return example ? '<span class="val ex">' + esc(example) + '</span>' : '<span class="val ph">Sélectionner</span>';
     var used = 0, shown = [], rest = 0;
     list.forEach(function (v) {
-      var w = v.length * 6.6 + 46;
+      var w = v.length * 6.6 + 46; if (chipMax) w = Math.min(w, chipMax);
       if (!shown.length || used + w <= maxW - 30) { shown.push(v); used += w + 8; } else rest++;
     });
     return '<span class="chips">' + shown.map(function (v) {
@@ -683,32 +671,31 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   }
 
   /* ---------- render ---------- */
+  var NIGHT_TIP = 'Le travail de nuit correspond à une durée d’au moins 9 heures consécutives comprenant l’intervalle entre minuit et 5 heures.';
+  function cellWidth() { var t = $('shifts'); return t && t.offsetWidth ? t.offsetWidth / 4 - 48 : 150; }
+  function peopleCell(s, i, kind, label, w) {
+    var list = s.on ? s[kind] : [];
+    return '<div class="td"><button type="button" class="select' + (list.length ? ' has-chips' : '') + '" data-' + kind + '="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="' + label + ' pour ' + esc(s.label) + '"' + (s.on ? '' : ' aria-disabled="true"') + '>' +
+      chipsHTML(list, kind, i, w, null, 96) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>';
+  }
   function renderShifts() {
+    var w = cellWidth();
     $('shifts').innerHTML = S.shifts.map(function (s, i) {
       var err = showErrors && s.on && !s.period;
-      var val = s.on && s.period ? '<span class="val">' + esc(periodLabel(s.period)) + '</span>' : '<span class="val' + (s.on ? '' : ' ph') + '">Sélectionner</span>';
-      return '<div class="tr"><div class="td"><label><input class="cb" type="checkbox" id="sh-' + i + '" data-sh="' + i + '"' + (s.on ? ' checked' : '') + '><span>' + esc(s.label) + '</span></label></div>' +
-        '<div class="td"><button type="button" class="select' + (err ? ' is-error' : '') + '" data-period="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Période pour ' + esc(s.label) + '"' + (s.on ? '' : ' aria-disabled="true"') + '>' + val + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div></div>';
+      var val = s.on && s.period ? '<span class="val">' + esc(periodLabel(s.period)) + '</span>' : '<span class="val ph">Sélectionner</span>';
+      var night = s.label === 'Travail de nuit';
+      return '<div class="tr"><div class="td' + (night ? ' has-info' : '') + '"><label><input class="cb" type="checkbox" id="sh-' + i + '" data-sh="' + i + '"' + (s.on ? ' checked' : '') + '><span>' + esc(s.label) + '</span></label>' +
+        (night ? '<button class="help" type="button" data-tip="' + esc(NIGHT_TIP) + '" aria-label="Définition du travail de nuit"><sk-icon name="info" size="16"></sk-icon></button>' : '') + '</div>' +
+        '<div class="td"><button type="button" class="select' + (err ? ' is-error' : '') + '" data-period="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Période pour ' + esc(s.label) + '"' + (s.on ? '' : ' aria-disabled="true"') + '>' + val + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
+        peopleCell(s, i, 'vol', 'Volontaires', w) + peopleCell(s, i, 'avoid', 'Préfèrent éviter', w) + '</div>';
     }).join('');
     $('err').hidden = !(showErrors && S.shifts.some(function (s) { return s.on && !s.period; }));
-  }
-  function cellWidth() { var t = $('exc'); return t && t.offsetWidth ? t.offsetWidth / 3 - 56 : 120; }
-  function renderExc(newId) {
-    var w = cellWidth();
-    $('exc').innerHTML = S.exc.map(function (r, i) {
-      r.avoid = r.avoid || [];
-      return '<div class="tr exc-row' + (r.id === newId ? ' is-new' : '') + '" data-row="' + r.id + '">' +
-        '<div class="td"><button type="button" class="select' + (r.emps.length ? ' has-chips' : '') + '" data-emps="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Employés">' + chipsHTML(r.emps, 'emps', i, w) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
-        '<div class="td"><button type="button" class="select' + (r.vol.length ? ' has-chips' : '') + '" data-vol="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Souhaitent">' + chipsHTML(r.vol, 'vol', i, w) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
-        '<div class="td"><button type="button" class="select' + (r.avoid.length ? ' has-chips' : '') + '" data-avoid="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Préfèrent éviter">' + chipsHTML(r.avoid, 'avoid', i, w) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
-        (S.exc.length > 1 ? '<button type="button" class="icon-btn icon-btn--sm row-del" data-del="' + i + '" aria-label="Supprimer la ligne"><sk-icon name="bin" size="16"></sk-icon></button>' : '') + '</div>';
-    }).join('') + '<div class="add-row"><button class="pill pill--text pill--sm" type="button" id="add"><sk-icon name="more" size="16"></sk-icon>Ajouter</button></div>';
   }
   function renderPostes() {
     var b = $('postes');
     b.innerHTML = chipsHTML(S.postes, 'postes', 0, b.offsetWidth ? b.offsetWidth - 48 : 520) + '<sk-icon name="unfold-more" size="24"></sk-icon>';
   }
-  function renderAll() { renderShifts(); renderExc(); renderPostes(); }
+  function renderAll() { renderShifts(); renderPostes(); }
 
   /* ---------- interactions inside dialog ---------- */
   $('shifts').addEventListener('change', function (e) {
@@ -728,28 +715,21 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
       });
       return;
     }
-    if ((t = e.target.closest('[data-emps]'))) { multiPop(t, EMPLOYEES, function () { return S.exc[+t.getAttribute('data-emps')].emps; }, 'emps', +t.getAttribute('data-emps')); return; }
-    /* a day or time chosen in "Souhaitent" is hidden from "Préfèrent éviter" on the same row, and the other way round */
-    if ((t = e.target.closest('[data-avoid]'))) { var ra = S.exc[+t.getAttribute('data-avoid')]; multiPop(t, SHIFT_TYPES.filter(function (v) { return ra.vol.indexOf(v) < 0; }), function () { return ra.avoid; }, 'avoid', +t.getAttribute('data-avoid')); return; }
-    if ((t = e.target.closest('[data-vol]'))) { var rv = S.exc[+t.getAttribute('data-vol')]; multiPop(t, SHIFT_TYPES.filter(function (v) { return rv.avoid.indexOf(v) < 0; }), function () { return rv.vol; }, 'vol', +t.getAttribute('data-vol')); return; }
-    if ((t = e.target.closest('#postes'))) { multiPop(t, POSTES, function () { return S.postes; }, 'postes', 0); return; }
-    if ((t = e.target.closest('[data-del]'))) {
-      var idx = +t.getAttribute('data-del'), row = t.closest('.exc-row');
-      row.classList.add('is-leaving');
-      setTimeout(function () { S.exc.splice(idx, 1); renderExc(); updateDock(); }, 180);
+    /* an employee chosen in "Volontaires" is hidden from "Préfèrent éviter" on the same row, and the other way round */
+    if ((t = e.target.closest('[data-vol], [data-avoid]'))) {
+      var kind = t.hasAttribute('data-vol') ? 'vol' : 'avoid', other = kind === 'vol' ? 'avoid' : 'vol', r = S.shifts[+t.getAttribute('data-' + kind)];
+      if (!r.on) return;
+      multiPop(t, EMPLOYEES.filter(function (v) { return r[other].indexOf(v) < 0; }), function () { return r[kind]; }, kind, +t.getAttribute('data-' + kind));
       return;
     }
-    if (e.target.closest('#add')) {
-      var id = nextId++; S.exc.push({ id: id, emps: [], vol: [], avoid: [] }); renderExc(id); updateDock();
-      var b = document.querySelector('[data-row="' + id + '"] [data-emps]'); if (b) { b.focus(); b.click(); }
-    }
+    if ((t = e.target.closest('#postes'))) { multiPop(t, POSTES, function () { return S.postes; }, 'postes', 0); return; }
   });
   $('body').addEventListener('keydown', function (e) {
     var rm = e.target.closest('[data-rm]');
     if (rm && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); removeChip(rm); }
   });
-  function listFor(kind, i) { return kind === 'postes' ? S.postes : kind === 'aa' ? AA.postes : S.exc[i][kind]; }
-  function rerender(kind) { if (kind === 'postes') renderPostes(); else if (kind === 'aa') renderAA(); else renderExc(); }
+  function listFor(kind, i) { return kind === 'postes' ? S.postes : kind === 'aa' ? AA.postes : S.shifts[i][kind]; }
+  function rerender(kind) { if (kind === 'postes') renderPostes(); else if (kind === 'aa') renderAA(); else renderShifts(); }
   function removeChip(el) {
     var kind = el.getAttribute('data-rm'), i = +el.getAttribute('data-idx'), v = el.getAttribute('data-v');
     var chip = el.closest('.chip'); chip.classList.add('is-leaving');
@@ -842,13 +822,9 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     requestAnimationFrame(function () { tip.classList.add('is-on'); });
   }
   function hideTip() { tip.classList.remove('is-on'); setTimeout(function () { if (!tip.classList.contains('is-on')) tip.hidden = true; }, 120); }
-  var helpText = 'Les employés volontaires seront planifiés en priorité sur les jours et horaires pénibles choisis.';
-  ['mouseenter', 'focus'].forEach(function (ev) { $('help').addEventListener(ev, function () { showTip($('help'), helpText); }); });
-  ['mouseleave', 'blur'].forEach(function (ev) { $('help').addEventListener(ev, hideTip); });
-  [].forEach.call(document.querySelectorAll('.help[data-tip]'), function (b) {
-    ['mouseenter', 'focus'].forEach(function (ev) { b.addEventListener(ev, function () { showTip(b, b.getAttribute('data-tip')); }); });
-    ['mouseleave', 'blur'].forEach(function (ev) { b.addEventListener(ev, hideTip); });
-  });
+  /* delegated, so help icons rendered later (e.g. "Travail de nuit" in the table) get their tooltip too */
+  ['mouseover', 'focusin'].forEach(function (ev) { document.addEventListener(ev, function (e) { var b = e.target.closest && e.target.closest('.help[data-tip]'); if (b) showTip(b, b.getAttribute('data-tip')); }); });
+  ['mouseout', 'focusout'].forEach(function (ev) { document.addEventListener(ev, function (e) { var b = e.target.closest && e.target.closest('.help[data-tip]'); if (b && !(e.relatedTarget && b.contains(e.relatedTarget))) hideTip(); }); });
   $('body').addEventListener('mouseover', function (e) { var m = e.target.closest('.more'); if (m) { showTip(m, m.getAttribute('title')); m.removeAttribute('data-t'); } });
   $('body').addEventListener('mouseout', function (e) { if (e.target.closest('.more')) hideTip(); });
 
@@ -881,7 +857,6 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     }
     btn.disabled = true; btn.innerHTML = '<span class="spin" aria-hidden="true"></span>Valider et terminer';
     setTimeout(function () {
-      S.exc = S.exc.filter(function (r) { return r.emps.length || r.vol.length || r.avoid.length; });
       saved = clone(S);
       btn.disabled = false; btn.textContent = 'Valider et terminer';
       closeDialog();
@@ -940,6 +915,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     var f = mins(saved.night.from), t = mins(saved.night.to), a = mins(s.s), b = mins(s.e);
     return f > t ? (b > f || a < t) : (a < t && b > f);
   }
+  var HOLIDAYS = []; /* day indexes of public holidays in the displayed week (none from 25 Sept to 1 Oct) */
   var PEN_TESTS = {
     'Ouvertures': ['ouverture', function (s) { return mins(s.s) <= 9 * 60; }],
     /* a full-day shift (09:00 - 22:00) counts as an opening only; a closing shift starts in the afternoon */
@@ -947,7 +923,8 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     'Travail de nuit': ['nuit', inNight],
     'Samedis': ['samedi', function (s) { return s.day === 5; }],
     'Dimanches': ['dimanche', function (s) { return s.day === 6; }],
-    'Week-ends': ['week-end', function (s) { return s.day >= 5; }]
+    'Week-ends': ['week-end', function (s) { return s.day >= 5; }],
+    'Jours fériés': ['jour férié', function (s) { return HOLIDAYS.indexOf(s.day) >= 0; }]
   };
   function penibleOf(s) {
     if (!$('c4').checked) return { hours: [], poste: false };
