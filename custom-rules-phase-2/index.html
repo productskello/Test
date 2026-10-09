@@ -596,8 +596,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
         { label: 'Travail de nuit', on: true, period: 'week', vol: [], avoid: [] },
         { label: 'Samedis', on: false, period: null, vol: [], avoid: [] },
         { label: 'Dimanches', on: false, period: null, vol: [], avoid: [] },
-        { label: 'Week-ends', on: true, period: '4w', vol: [], avoid: [] },
-        { label: 'Jours fériés', on: false, period: null, vol: [], avoid: [] }
+        { label: 'Week-ends', on: true, period: '4w', vol: [], avoid: [] }
       ],
       /* night work: a shift that covers part of the midnight - 5:00 interval */
       night: { from: '00:00', to: '05:00' },
@@ -927,7 +926,6 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     var f = mins(saved.night.from), t = mins(saved.night.to), a = mins(s.s), b = mins(s.e);
     return f > t ? (b > f || a < t) : (a < t && b > f);
   }
-  var HOLIDAYS = []; /* day indexes of public holidays in the displayed week (none from 25 Sept to 1 Oct) */
   var PEN_TESTS = {
     'Ouvertures': ['ouverture', function (s) { return mins(s.s) <= 9 * 60; }],
     /* a full-day shift (09:00 - 22:00) counts as an opening only; a closing shift starts in the afternoon */
@@ -935,8 +933,7 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     'Travail de nuit': ['nuit', inNight],
     'Samedis': ['samedi', function (s) { return s.day === 5; }],
     'Dimanches': ['dimanche', function (s) { return s.day === 6; }],
-    'Week-ends': ['week-end', function (s) { return s.day >= 5; }],
-    'Jours fériés': ['jour férié', function (s) { return HOLIDAYS.indexOf(s.day) >= 0; }]
+    'Week-ends': ['week-end', function (s) { return s.day >= 5; }]
   };
   function penibleOf(s) {
     if (!$('c4').checked) return { hours: [], poste: false };
