@@ -48,8 +48,11 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .cb::after { content: ''; width: 12px; height: 7px; border: solid var(--white); border-width: 0 0 2px 2px; transform: translateY(-1px) rotate(-45deg) scale(0); transition: transform .18s cubic-bezier(.3,1.6,.5,1); }
 .cb:checked { background: var(--blue); border-color: var(--blue); }
 .cb:checked::after { transform: translateY(-1px) rotate(-45deg) scale(1); }
-.cb:disabled { border-color: var(--grey-30); background: var(--grey-5); cursor: not-allowed; }
-.tr.is-locked .td label { color: var(--grey-30); cursor: not-allowed; }
+.cb:disabled { border-color: var(--grey-30); background: transparent; cursor: not-allowed; }
+/* disabled row (Orora disabled inputs): grey fill, grey text and chevrons */
+.tr.is-locked .td { background: var(--grey-5); }
+.tr.is-locked .td label, .tr.is-locked .select { color: var(--grey-30); cursor: not-allowed; }
+.tr.is-locked .select .val, .tr.is-locked .select sk-icon { color: var(--grey-30); }
 
 /* pills */
 .pill { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: 18px; border: 1px solid transparent; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: box-shadow .2s, transform .1s, opacity .2s; }
