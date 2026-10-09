@@ -48,6 +48,8 @@ h2 { margin: 0; font-size: 20px; line-height: 22px; font-weight: 600; }
 .cb::after { content: ''; width: 12px; height: 7px; border: solid var(--white); border-width: 0 0 2px 2px; transform: translateY(-1px) rotate(-45deg) scale(0); transition: transform .18s cubic-bezier(.3,1.6,.5,1); }
 .cb:checked { background: var(--blue); border-color: var(--blue); }
 .cb:checked::after { transform: translateY(-1px) rotate(-45deg) scale(1); }
+.cb:disabled { border-color: var(--grey-30); background: var(--grey-5); cursor: not-allowed; }
+.tr.is-locked .td label { color: var(--grey-30); cursor: not-allowed; }
 
 /* pills */
 .pill { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: 18px; border: 1px solid transparent; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: box-shadow .2s, transform .1s, opacity .2s; }
@@ -678,13 +680,20 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
     return '<div class="td"><button type="button" class="select' + (list.length ? ' has-chips' : '') + '" data-' + kind + '="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="' + label + ' pour ' + esc(s.label) + '"' + (s.on ? '' : ' aria-disabled="true"') + '>' +
       chipsHTML(list, kind, i, w, null, 96) + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>';
   }
+  /* "Week-ends" already covers Saturdays and Sundays: checking it greys out "Samedis" and "Dimanches", and the other way round */
+  function isOn(label) { return S.shifts.some(function (x) { return x.label === label && x.on; }); }
+  function lockedBy(label) {
+    if ((label === 'Samedis' || label === 'Dimanches') && isOn('Week-ends')) return 'Décochez « Week-ends » pour choisir les ' + label.toLowerCase() + ' séparément.';
+    if (label === 'Week-ends' && (isOn('Samedis') || isOn('Dimanches'))) return 'Décochez « Samedis » et « Dimanches » pour choisir les week-ends.';
+    return '';
+  }
   function renderShifts() {
     var w = cellWidth();
     $('shifts').innerHTML = S.shifts.map(function (s, i) {
       var err = showErrors && s.on && !s.period;
       var val = s.on && s.period ? '<span class="val">' + esc(periodLabel(s.period)) + '</span>' : '<span class="val ph">Sélectionner</span>';
-      var night = s.label === 'Travail de nuit';
-      return '<div class="tr"><div class="td' + (night ? ' has-info' : '') + '"><label><input class="cb" type="checkbox" id="sh-' + i + '" data-sh="' + i + '"' + (s.on ? ' checked' : '') + '><span>' + esc(s.label) + '</span></label>' +
+      var night = s.label === 'Travail de nuit', lock = lockedBy(s.label);
+      return '<div class="tr' + (lock ? ' is-locked' : '') + '"><div class="td' + (night ? ' has-info' : '') + '"' + (lock ? ' data-tip="' + esc(lock) + '"' : '') + '><label><input class="cb" type="checkbox" id="sh-' + i + '" data-sh="' + i + '"' + (s.on ? ' checked' : '') + (lock ? ' disabled' : '') + '><span>' + esc(s.label) + '</span></label>' +
         (night ? '<button class="help" type="button" data-tip="' + esc(NIGHT_TIP) + '" aria-label="Définition du travail de nuit"><sk-icon name="info" size="16"></sk-icon></button>' : '') + '</div>' +
         '<div class="td"><button type="button" class="select' + (err ? ' is-error' : '') + '" data-period="' + i + '" aria-haspopup="listbox" aria-expanded="false" aria-label="Période pour ' + esc(s.label) + '"' + (s.on ? '' : ' aria-disabled="true"') + '>' + val + '<sk-icon class="chev" name="chevron-down" size="24"></sk-icon></button></div>' +
         peopleCell(s, i, 'vol', 'Volontaires', w) + peopleCell(s, i, 'avoid', 'Préfèrent éviter', w) + '</div>';
@@ -823,8 +832,8 @@ html.is-planning, html.is-planning body { height: 100%; overflow: hidden; }
   }
   function hideTip() { tip.classList.remove('is-on'); setTimeout(function () { if (!tip.classList.contains('is-on')) tip.hidden = true; }, 120); }
   /* delegated, so help icons rendered later (e.g. "Travail de nuit" in the table) get their tooltip too */
-  ['mouseover', 'focusin'].forEach(function (ev) { document.addEventListener(ev, function (e) { var b = e.target.closest && e.target.closest('.help[data-tip]'); if (b) showTip(b, b.getAttribute('data-tip')); }); });
-  ['mouseout', 'focusout'].forEach(function (ev) { document.addEventListener(ev, function (e) { var b = e.target.closest && e.target.closest('.help[data-tip]'); if (b && !(e.relatedTarget && b.contains(e.relatedTarget))) hideTip(); }); });
+  ['mouseover', 'focusin'].forEach(function (ev) { document.addEventListener(ev, function (e) { var b = e.target.closest && e.target.closest('.help[data-tip], .is-locked [data-tip]'); if (b) showTip(b, b.getAttribute('data-tip')); }); });
+  ['mouseout', 'focusout'].forEach(function (ev) { document.addEventListener(ev, function (e) { var b = e.target.closest && e.target.closest('.help[data-tip], .is-locked [data-tip]'); if (b && !(e.relatedTarget && b.contains(e.relatedTarget))) hideTip(); }); });
   $('body').addEventListener('mouseover', function (e) { var m = e.target.closest('.more'); if (m) { showTip(m, m.getAttribute('title')); m.removeAttribute('data-t'); } });
   $('body').addEventListener('mouseout', function (e) { if (e.target.closest('.more')) hideTip(); });
 
